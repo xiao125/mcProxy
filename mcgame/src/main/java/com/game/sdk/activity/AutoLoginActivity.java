@@ -138,7 +138,7 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 							if (adapter==null) {
 
 								View view = View.inflate(AutoLoginActivity.this,R.layout.mc_popup_layout,null);
-								etLv =view.findViewById(R.id.mc_pop_ls);
+								etLv = (ListView) view.findViewById(R.id.mc_pop_ls);
 
 								etLv.setBackgroundColor(Color.parseColor("#BCBCBC"));
 								pop=new PopupWindow(view, account_et.getWidth(),
