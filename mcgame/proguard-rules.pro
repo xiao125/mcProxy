@@ -259,3 +259,10 @@
     public <fields>;
     public <methods>;
 }
+-keep class com.game.sdk.floatmenu.SusViewMager{
+    *;
+}
+
+-keep class com.game.sdk.floatmenu.DotImageView{
+    *;
+}

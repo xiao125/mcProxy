@@ -11,7 +11,7 @@ import android.content.Intent;
 
 import com.game.sdk.GameSDK;
 import com.game.sdk.bean.GameInfo;
-import com.game.sdk.floatmenu.c;
+import com.game.sdk.floatmenu.SusViewMager;
 import com.game.sdk.listener.LoginListener;
 import com.proxy.Data;
 import com.proxy.OpenSDK;
@@ -313,7 +313,7 @@ public class SdkChannel extends SdkProxy {
 				LogUtil.log("res+fal" + result.toString());
 				mLoginListener.onFail(result.toString());
 			}
-		}, new c.a() {
+		}, new SusViewMager.a() {
 			@Override
 			public void a() {
 				kNListener.getLogoutListener().onSuccess(1);
@@ -398,7 +398,7 @@ public class SdkChannel extends SdkProxy {
 		//游戏切换账号接口
 		//gameSDK.McLogout(mActivity);
 			
-		gameSDK.McLogout(new c.a() {
+		gameSDK.McLogout(new SusViewMager.a() {
 			@Override
 			public void a() {
 				kNListener.getLogoutListener().onSuccess(2);
