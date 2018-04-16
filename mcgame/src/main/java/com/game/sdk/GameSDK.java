@@ -423,14 +423,19 @@ public class GameSDK {
 	//关闭
 	public void hideFloat(){
 
-		mSusViewMager.hideFloat();
+		if (mSusViewMager!=null){
+			mSusViewMager.hideFloat();
+		}
+
 
 	}
 
 	//移除所有悬浮窗
 	public void destoryFloat(){
+		if (mSusViewMager!=null){
+			mSusViewMager.destroyFloat();
+		}
 
-		mSusViewMager.destroyFloat();
 	}
 
 
