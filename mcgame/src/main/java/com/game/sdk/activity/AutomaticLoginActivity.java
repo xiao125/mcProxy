@@ -58,12 +58,12 @@ public class AutomaticLoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+/*
         if(GameSDK.getInstance().ismScreenSensor()){
 
         }else{
             setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-        }
+        }*/
 
         setContentView(R.layout.mc_automaticlogin_layout);
 

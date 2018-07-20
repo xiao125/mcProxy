@@ -75,12 +75,12 @@ public class BindCellActivity  extends Activity implements OnClickListener {
 		m_activity = this ;
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+	/*
 		if(GameSDK.getInstance().ismScreenSensor()){
 			
 		}else{
 			setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-		}
+		}*/
 		
 		setContentView(R.layout.mc_bind_cell);
 
@@ -201,11 +201,11 @@ public class BindCellActivity  extends Activity implements OnClickListener {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
+		/*if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}else{
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		}
+		}*/
 	}
 
 

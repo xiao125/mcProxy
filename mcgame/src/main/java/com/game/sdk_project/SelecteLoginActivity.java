@@ -33,12 +33,12 @@ private boolean isFirstLogin=false;
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+/*
 		if(GameSDK.getInstance().ismScreenSensor()){
 
 		}else{
 			setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-		}
+		}*/
 
 		setContentView(R.layout.mc_activity_selecte_login);
 		activity=this;

@@ -95,11 +95,11 @@ public class FastLoginActivity extends Activity {
 
         m_activity = this ;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        if(GameSDK.getInstance().ismScreenSensor()){
+      /*  if(GameSDK.getInstance().ismScreenSensor()){
 
         }else{
             setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-        }
+        }*/
 
         setContentView(R.layout.mc_fast_login);
 
@@ -912,9 +912,9 @@ public class FastLoginActivity extends Activity {
                                     TextView ts = (TextView) v.findViewById(R.id.ts);
                                     ImageView close = (ImageView)v.findViewById(R.id.mc_da_lose);//关闭
                                     CheckBox mcheckBox = (CheckBox)v.findViewById(R.id.mc_tx);//选择今日不提醒
-
                                     dia.show();
                                     dia.setContentView(v);
+                                    dia.setCancelable(false);//返回键时 也不消失dismiss
                                     cont.setOnClickListener(new View.OnClickListener() {
 
                                         @Override
@@ -1034,11 +1034,11 @@ public class FastLoginActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
+        /*if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }else{
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        }*/
     }
 
 

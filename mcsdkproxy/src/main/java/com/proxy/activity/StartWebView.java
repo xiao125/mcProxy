@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -130,9 +131,10 @@ public class StartWebView extends Activity implements OnClickListener {
 		ws.setJavaScriptEnabled(true);
 		ws.setDomStorageEnabled(true);
 		ws.setSupportMultipleWindows(true);// 新加
-		// 如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript
-		ws.setJavaScriptEnabled(true);
-		ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+		ws.setJavaScriptEnabled(true); // 如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+		}
 
 		xwebchromeclient = new myWebChromeClient();
 		webView.setWebChromeClient(xwebchromeclient);

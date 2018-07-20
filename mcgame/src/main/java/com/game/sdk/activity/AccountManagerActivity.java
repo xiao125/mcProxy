@@ -42,11 +42,11 @@ public class AccountManagerActivity extends Activity implements OnClickListener 
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
-		if(GameSDK.getInstance().ismScreenSensor()){
+		/*if(GameSDK.getInstance().ismScreenSensor()){
 			
 		}else{
 			setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-		}
+		}*/
 		
 		setContentView(R.layout.mc_visit_manager_dialog);
 
@@ -142,11 +142,11 @@ public class AccountManagerActivity extends Activity implements OnClickListener 
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
+		/*if(GameSDK.getInstance().getGameInfo().getOrientation() == Constants.LANDSCAPE){
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		}else{
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		}
+		}*/
 	}
 
 	@Override

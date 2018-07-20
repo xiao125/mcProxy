@@ -257,9 +257,7 @@ public class SdkChannel extends SdkProxy {
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
 		super.onActivityResult(requestCode, resultCode, data);
-		
 	}
 	
 	
@@ -268,8 +266,6 @@ public class SdkChannel extends SdkProxy {
 		super.login(activity , params);
 
 		String gameId = Data.getInstance().getGameInfo().getGameId();
-
-
 
 		gameSDK.login(activity, new LoginListener() {
 

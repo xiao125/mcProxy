@@ -23,13 +23,13 @@
             android:paddingRight="@dimen/dp_10"
             >
 
-            <ImageView
+           <!-- <ImageView
                 android:layout_width="@dimen/dp_110"
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerInParent="true"
                 android:background="@drawable/mc_login_bg"
 
-                />
+                />-->
 
             <ImageView
                 android:id="@+id/account_bind_back"

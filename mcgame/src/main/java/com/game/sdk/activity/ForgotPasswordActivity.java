@@ -58,11 +58,11 @@ public class ForgotPasswordActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        if(GameSDK.getInstance().ismScreenSensor()){
+       /* if(GameSDK.getInstance().ismScreenSensor()){
 
         }else{
             setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-        }
+        }*/
 
         setContentView(R.layout.mc_forgot_password_layout);
 
