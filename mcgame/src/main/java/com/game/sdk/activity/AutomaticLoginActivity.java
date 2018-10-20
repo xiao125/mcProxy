@@ -35,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**自动登录
- * Created by Administrator on 2018/3/13 0013.
+ *
  */
 
 public class AutomaticLoginActivity extends Activity {
@@ -56,7 +56,6 @@ public class AutomaticLoginActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 /*
         if(GameSDK.getInstance().ismScreenSensor()){
@@ -64,50 +63,27 @@ public class AutomaticLoginActivity extends Activity {
         }else{
             setRequestedOrientation(GameSDK.getInstance().getmOrientation());
         }*/
-
         setContentView(R.layout.mc_automaticlogin_layout);
-
         m_activity = this ;
-
         LoadingDialog.show(m_activity,"正在登录中...",false); //开启提示自动登录中
-
         AutLogin();
-
-
         lastTime =String.valueOf(TodayTimeUtils.LastTime(m_activity));
         lastName = String.valueOf(TodayTimeUtils.LastName(m_activity,username));
         todayTime = TodayTimeUtils.TodayTime();
         KnLog.log("==========lastTime========"+lastName+"  ============lastName="+lastName);
-
-      /*  getpreferences();
-        getTimesnight();
-        getTime();*/
-
     }
-
-
-
 
     //自动登录
     private void AutLogin(){
-
-
-            String usernames[] = DBHelper.getInstance().findAllUserName();
-
-            if( usernames != null && usernames.length >0 ){
-                 username = usernames[0]; //获得到用户名
-                password = DBHelper.getInstance().findPwdByUsername(username); //密码
-
-                KnLog.log("自动登录");
-
-                //账号登录
-                HttpService.doLogin(getApplicationContext(), handler, username,password);
-
-
-            }
-
+        String usernames[] = DBHelper.getInstance().findAllUserName();
+        if( usernames != null && usernames.length >0 ){
+            username = usernames[0]; //获得到用户名
+            password = DBHelper.getInstance().findPwdByUsername(username); //密码
+            KnLog.log("自动登录");
+            //账号登录
+            HttpService.doLogin(getApplicationContext(), handler, username,password);
+        }
     }
-
 
     //preferences 保存第一次登录与今日提醒
     private void getpreferences(){
@@ -122,9 +98,6 @@ public class AutomaticLoginActivity extends Activity {
        lastTime = preferences.getString("LoginTime", "2018-03-10");
         lastName = preferences.getString("Loginname", "mc");
         KnLog.log(" ===========lastTime="+lastTime+" lastName="+lastName);
-
-
-
     }
 
 
@@ -238,31 +211,19 @@ public class AutomaticLoginActivity extends Activity {
 
                         }
                     }
-
-
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
-
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                             KnLog.log("没有绑定手机");
                             if (null == m_activity) {
-
                             } else {
-
-
                                 if(lastTime.equals(todayTime) && lastName.equals( username )){ //如果两个时间段相等
-
                                     KnLog.log("今天不提醒,今天日期"+todayTime+" 最后保存日期:"+lastTime+" 现在登录的账号:"+username+" 最后保存的账号:"+lastName);
                                     m_activity.finish();
                                     m_activity = null;
-
-
                                 }else {
-
-
                                     LayoutInflater inflater = LayoutInflater.from(m_activity);
                                     View v = inflater.inflate(R.layout.mc_bind_mobile_dialog_ts, null); //绑定手机
                                     LinearLayout layout = (LinearLayout) v.findViewById(R.id.visit_dialog);
@@ -272,7 +233,6 @@ public class AutomaticLoginActivity extends Activity {
                                     TextView ts = (TextView) v.findViewById(R.id.ts);
                                     ImageView close = (ImageView)v.findViewById(R.id.mc_da_lose);//关闭
                                     CheckBox mcheckBox = (CheckBox)v.findViewById(R.id.mc_tx);//选择今日不提醒
-
                                     dia.show();
                                     dia.setContentView(v);
                                     cont.setOnClickListener(new View.OnClickListener() {
@@ -280,7 +240,6 @@ public class AutomaticLoginActivity extends Activity {
                                         @Override
                                         public void onClick(View v) {
                                             // TODO Auto-generated method stub
-
                                             DBHelper.getInstance().insertOrUpdateUser(username,password);
                                             Intent intent = new Intent(m_activity, BindCellActivity.class);
                                             intent.putExtra("userName", username);
@@ -291,9 +250,7 @@ public class AutomaticLoginActivity extends Activity {
                                                 dia.dismiss();
                                                 m_activity.finish();
                                                 m_activity=null;
-
                                             }
-
                                         }
                                     });
 
@@ -302,44 +259,28 @@ public class AutomaticLoginActivity extends Activity {
 
                                         @Override
                                         public void onClick(View v) {
-                                            // TODO Auto-generated method stub
-
                                             //	DBHelper.getInstance().insertOrUpdateUser( name , m_passwords );
                                             if (null == m_activity) {
 
                                             } else {
-
                                                 if(iscb){
-
-
                                                     //保存勾选后的日期
                                                   /*  saveExitTime(getTime());
                                                     saveExiName(username);*/
-
                                                     TodayTimeUtils.saveExitTime(m_activity);
                                                     TodayTimeUtils.saveExitName(m_activity,username,username);
-
                                                     dia.dismiss();
                                                     m_activity.finish();
                                                     m_activity = null;
-
                                                     KnLog.log("勾选了今天不提醒,今天日期"+todayTime+" 最后保存日期:"+lastTime+" 现在登录的账号:"+username+" 最后保存的账号:"+lastName);
                                                 }else {
-
                                                     dia.dismiss();
                                                     m_activity.finish();
                                                     m_activity = null;
-
                                                 }
-
-
-
                                             }
-
-
                                         }
                                     });
-
 
                                     //关闭AlertDialog
                                     close.setOnClickListener(new View.OnClickListener() {
@@ -351,36 +292,25 @@ public class AutomaticLoginActivity extends Activity {
                                         }
                                     });
 
-
                                     //选择提醒
                                     mcheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                                         @Override
                                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                             if (isChecked){
                                                 iscb= true;
-
                                             }else {
-
                                                 iscb = false;
-
                                             }
                                         }
                                     });
 
-
                                 }
-
 
                             }
                         }
 
                     }
-
                     break;
-
-
-
-
                 default:
                     break;
             }

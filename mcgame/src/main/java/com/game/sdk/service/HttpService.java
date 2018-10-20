@@ -28,6 +28,7 @@ import com.game.sdk.task.RegisterAsyncTask;
 import com.game.sdk.task.VisitorAccountBindAsyncTask;
 import com.game.sdk.task.VisitorAsyncTask;
 import com.game.sdk.task.VisitorBindMobileAsyncTask;
+import com.game.sdk.util.BuildHelper;
 import com.game.sdk.util.DeviceUtil;
 import com.game.sdk.util.KnLog;
 import com.game.sdk.util.Md5Util;
@@ -36,8 +37,14 @@ import com.game.sdk.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -47,22 +54,18 @@ public class HttpService {
 
 	//查询是否绑定账号
 	public static void queryBindMsi( Context applicationContext, Handler handler){
-		
 		String imei = DeviceUtil.getDeviceId();
 		String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
 //		String proxy_version = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 		String proxy_version = PROXY_VERSION;
 		String app_secret = "3d759cba73b253080543f8311b6030bf";
-		
 		Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
 			@Override
 			public int compare(String arg0, String arg1) {
 				// TODO Auto-generated method stub
 				return arg0.compareTo(arg1);
 			}
 		} );
-		
 		update_params.put("msi",imei);
 		
 		Log.e("msi", imei);
@@ -79,36 +82,16 @@ public class HttpService {
 	public static void queryBindAccont( Context applicationContext, Handler handler, String user_Name ){
 		
 		try {
-
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
+			HashMap<String,String> update_params = getCommonParams();
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION;
-			String gameName = gameInfo.getGameId() ; 
-			
-			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
-				@Override
-				public int compare(String arg0, String arg1) {
-					// TODO Auto-generated method stub
-					return arg0.compareTo(arg1);
-				}
-			} );
-			
 			JSONObject content = new JSONObject();
 			content.put("user_name",user_Name);
 			update_params.put("content", content.toString());
 			update_params.put("proxyVersion", versionCode);
-			update_params.put("game", gameName);
-			update_params.put("app_id",app_id);
-			
 			Map<String, String> update_params1 = Util.getSign( update_params , app_secret );
-			
 			new QueryAccountBindAsyncTask(applicationContext, handler, SDK.QUERY_ACCOUNT_BIND)
 			.execute(new Map[] { update_params1 , null, null });
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -120,24 +103,13 @@ public class HttpService {
 	public static void getUsername( Context applicationContext, Handler handler, String user_Name ){
 
 		try {
-
-
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-
 			HashMap<String , String> params = getCommonParams();
-
-			String game_id = gameInfo.getGameId();
-			String platform = gameInfo.getPlatform();
-			String channel = gameInfo.getChannel();
-
 			JSONObject obj = new JSONObject();
 			obj.put("user_name", user_Name);
 			String content = obj.toString();
 			params.put("content", content);
-
+			params.put("proxyVersion", "1.0.0");
 			params.put("sign", Md5Util.getMd5(content + GameSDK.getInstance().getGameInfo().getRegKey())); //这个接口验签必须是md5
-
-
 			new GetUserNameAsyncTask(applicationContext, handler, SDK.GET_USER_NAME)
 					.execute(new Map[] { params , null, null });
 
@@ -240,81 +212,36 @@ public class HttpService {
 	//获取验证码请求
 	public static void getSecCode( Context applicationContext, Handler handler, String mobile,String newSdk ){
 		try {
-			
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			HashMap<String , String> params = new HashMap<String, String>();
-			
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
+			HashMap<String,String> update_params = getCommonParams();
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION ;
-			String gameName = gameInfo.getGameId() ; 
-			
-			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
-				@Override
-				public int compare(String arg0, String arg1) {
-					// TODO Auto-generated method stub
-					return arg0.compareTo(arg1);
-				}
-			} );
-			
 			JSONObject content = new JSONObject();
 			content.put("mobile",mobile);
-		//	update_params.put("newSdk", newSdk);
 			update_params.put("content", content.toString());
 			update_params.put("proxyVersion", versionCode);
-			update_params.put("game", gameName);
-			update_params.put("app_id",app_id);
-			
 			Map<String, String> update_params1 = Util.getSign( update_params , app_secret );
-			
 			new GetSecurityCodeAsyncTask(applicationContext, handler, SDK.GET_RESURITY_CODE_URL)
 					.execute(new Map[] { update_params1, null, null });
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
 	}
 
 	//绑定手机请求
 	public static void bindMobile( Context applicationContext, Handler handler, String mobile , String security_code , String user_Name ){
 		
 		try {
-
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
+			HashMap<String,String> update_params = getCommonParams();
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION ;
-			String gameName = gameInfo.getGameId() ;
-			String imei = DeviceUtil.getDeviceId();
-			
-			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
-				@Override
-				public int compare(String arg0, String arg1) {
-					// TODO Auto-generated method stub
-					return arg0.compareTo(arg1);
-				}
-			} );
-			
 			JSONObject content = new JSONObject();
 			content.put("mobile",mobile);
 			content.put("user_name",user_Name);
 			content.put("rand_code",security_code);
 			update_params.put("content", content.toString());
 			update_params.put("proxyVersion", versionCode);
-			update_params.put("game", gameName);
-			update_params.put("msi",imei);
-			update_params.put("app_id",app_id);
-			
 			Map<String, String> update_params1 = Util.getSign( update_params , app_secret );
-			
 			new BindMobileAsyncTask(applicationContext, handler, SDK.BIND_MOBILE_URL)
 					.execute(new Map[] { update_params1 , null, null });
 		} catch (Exception e) {
@@ -327,19 +254,14 @@ public class HttpService {
 	public static void visitorbindMobile( Context applicationContext, Handler handler, String mobile , String security_code , String user_Name,String user_Password ){
 
 		try {
-
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION ;
 			String gameName = gameInfo.getGameId() ;
 			String imei = DeviceUtil.getDeviceId();
 			String channel = gameInfo.getChannel();
 			String ad_channel = gameInfo.getAdChannel();
 			String platform = gameInfo.getPlatform();
-
 			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
 
 				@Override
@@ -348,7 +270,6 @@ public class HttpService {
 					return arg0.compareTo(arg1);
 				}
 			} );
-
 			JSONObject content = new JSONObject();
 			content.put("mobile",mobile);
 			content.put("user_name",user_Name);
@@ -375,82 +296,47 @@ public class HttpService {
 
 	//随机分配用户名接口
 	public static void RandUserName( Context applicationContext, Handler handler, String time ){
-
 		try {
-
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION ;
-			String gameName = gameInfo.getGameId() ;
-			String imei = DeviceUtil.getDeviceId();
-			String channel = gameInfo.getChannel();
-			String ad_channel = gameInfo.getAdChannel();
-			String platform = gameInfo.getPlatform();
-
 			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
 				@Override
 				public int compare(String arg0, String arg1) {
 					// TODO Auto-generated method stub
 					return arg0.compareTo(arg1);
 				}
 			} );
-
-
 			update_params.put("time",time);
 			update_params.put("proxyVersion", versionCode);
-
 			Map<String, String> update_params1 = Util.getSign( update_params , app_secret );
-
 			new RandUserNameAsyncTask(applicationContext, handler, SDK.RAND_USER_NAME)
 					.execute(new Map[] { update_params1 , null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 
 	//上报设备激活接口
 	public static void  recordActivate( Context applicationContext, Handler handler ){
-
-
 		try {
-
 		    HashMap<String , String> params = getCommonParams();
-
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String gameId = gameInfo.getGameId() ;
-			String imei = DeviceUtil.getDeviceId();
-		    String phonetype =  DeviceUtil.getPhoneType();
-			String appkey= String.valueOf(System.currentTimeMillis());//自定义，没有明确指定
-		    params.put("app_key",appkey);
-		    params.put("phone_Type",phonetype);//手机类型
-			params.put("proxyVersion","1.0.0");
-
-          KnLog.log("appkey");
-
-		    params.put("sign", Md5Util.getMd5(gameId+appkey+imei));
-
+			String app_secret = "3d759cba73b253080543f8311b6030bf";
+			String versionCode = PROXY_VERSION ;
+			params.put("proxyVersion",versionCode);
+			String DisplayMetrics = Util.ImageGalleryAdapter(applicationContext);
+			params.put("RP",DisplayMetrics); //当前手机分辨率
+			Map<String, String> update_params1 = Util.getSign(params ,app_secret );
 			new RecordActivateAsyncTask(applicationContext, handler, SDK.RECORD_ACTIVATE)
-					.execute(new Map[] { params , null, null });
+					.execute(new Map[] { update_params1 , null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
-
-
-
 
 	public static void getAccountSubmit( Context applicationContext, Handler handler, String mobile , String security_code ){
 	
 		try {
-			
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
 			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
 			String app_id     = "1011";
@@ -491,24 +377,10 @@ public class HttpService {
 	public static void passwordNewSubmit( Context applicationContext, Handler handler, String mobile , String security_code , String new_password,String newSdk ){
 		
 		try {
-
+			HashMap<String , String> update_params = getCommonParams();
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-			String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-			String app_id     = "1011";
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
-//			String versionCode = KnUtil.getJsonStringByName(appInfo, "versionCode") ;
 			String versionCode = PROXY_VERSION ;
-			String gameName = gameInfo.getGameId() ; 
-			
-			Map<String, String> update_params = new TreeMap<String, String>( new Comparator<String>() {
-
-				@Override
-				public int compare(String arg0, String arg1) {
-					// TODO Auto-generated method stub
-					return arg0.compareTo(arg1);
-				}
-			} );
-			
 			JSONObject content = new JSONObject();
 			content.put("mobile",mobile);
 			content.put("pwd_new",new_password);
@@ -516,11 +388,7 @@ public class HttpService {
 			update_params.put("newSdk", newSdk);//区分sdk
 			update_params.put("content", content.toString());
 			update_params.put("proxyVersion", versionCode);
-			update_params.put("game", gameName);
-			update_params.put("app_id",app_id);
-			
 			Map<String, String> update_params1 = Util.getSign( update_params , app_secret );
-			
 			new PassWordNewBindMobileAsyncTask(applicationContext, handler, SDK.UPDATE_PASSWORD_URL)
 					.execute(new Map[] { update_params1 , null, null });
 		} catch (Exception e) {
@@ -535,33 +403,22 @@ public class HttpService {
 			String username, String password) {
 
 		try {
-			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-
 			HashMap<String , String> params = getCommonParams();
-
-			String game_id = gameInfo.getGameId();
-			String platform = gameInfo.getPlatform();
-			String channel = gameInfo.getChannel();
-
-			Log.d("ttt",platform);
-			Log.d("ttt",game_id);
-			
+			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			JSONObject content = new JSONObject();
 			content.put("user_name", username);
 			content.put("passwd", password);
-
 			params.put("content", content.toString());
-			
-			params.put(
-					"sign",
-					Md5Util.getMd5(game_id + channel
-							+ platform + content.toString()
-							+ gameInfo.getAppKey()));
-			
-			KnLog.log(" login push the data "+gameInfo.getAppKey());
-
+			String versionCode = PROXY_VERSION ;
+			params.put("proxyVersion",versionCode);
+//			params.put(
+//					"sign",
+//					Md5Util.getMd5(game_id + channel
+//							+ platform + content.toString()
+//							+ gameInfo.getAppKey()));
+			Map<String, String> update_params = Util.getSign(params ,app_secret );
 			new LoginAsyncTask(applicationContext, handler, SDK.LOGIN_URL)
-					.execute(new Map[] { params, null, null });
+					.execute(new Map[] { update_params, null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -570,21 +427,20 @@ public class HttpService {
 	//根据用户名与密码来注册账号
 	public static void doRegister(Context applicationContext, Handler handler,
 			String username, String password) {
-		
 		try {
+
 			HashMap<String,String> params = getCommonParams();
-			
 			JSONObject obj = new JSONObject();
 			obj.put("user_name", username);
 			obj.put("passwd", password);
-			
 			String content = obj.toString();
-			
 			params.put("content", content);
-			params.put("sign", Md5Util.getMd5(content + GameSDK.getInstance().getGameInfo().getRegKey()));
-
+			String app_secret = "3d759cba73b253080543f8311b6030bf";
+			String versionCode = PROXY_VERSION ;
+			params.put("proxyVersion",versionCode);
+			Map<String, String> update_params = Util.getSign(params ,app_secret );
 			new RegisterAsyncTask(applicationContext, handler, SDK.REG_URL)
-					.execute(new Map[] { params, null, null });
+					.execute(new Map[] { update_params, null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -595,19 +451,81 @@ public class HttpService {
 								  String mobile,String code, String password) {
 
 		try {
-
 			HashMap<String,String> params = getCommonParams();
-
 			JSONObject obj = new JSONObject();
 			obj.put("mobile",mobile);
 			obj.put("passwd",password);
 			obj.put("rand_code",code);
 			String content = obj.toString();
 			params.put("content",content);
-
-			params.put("sign", Md5Util.getMd5(content + GameSDK.getInstance().getGameInfo().getRegKey()));
-
+			String app_secret = "3d759cba73b253080543f8311b6030bf";
+			String versionCode = PROXY_VERSION ;
+			params.put("proxyVersion",versionCode);
+			Map<String, String> update_params = Util.getSign(params ,app_secret );
 			new MobileRegisterAsyncTask(applicationContext, handler, SDK.REG_MOBILE)
+					.execute(new Map[] { update_params, null, null });
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	//注销接口 act_type: 2 注销 1：退出
+	public static void doCancel( String act_type,BaseListener listener) {
+
+		try {
+			HashMap<String,String> params =  new HashMap<String,String>();
+			UserInfo userInfo = GameSDK.getInstance().getUserInfo();
+			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
+			String open_id ="";
+			String server_id ="";
+			String nick_name ="";
+			String uid = "";
+
+			if(userInfo.getOpenId()!=null){
+				open_id = userInfo.getOpenId();
+			}
+			if(userInfo.getServerId()!=0){
+				server_id = String.valueOf(userInfo.getServerId());
+			}
+			if(userInfo.getUsername()!=null){
+				nick_name = userInfo.getUsername();
+			}
+			if(userInfo.getUid()!=null){
+				uid = userInfo.getUid();
+			}
+
+			String platform = gameInfo.getPlatform();
+			String game_id =  gameInfo.getGameId();
+			String channel = gameInfo.getChannel();
+			String ad_channel = gameInfo.getAdChannel();
+			String app_secret = gameInfo.getAppKey();
+			String versionCode = PROXY_VERSION ;
+			String msi = DeviceUtil.getDeviceId();
+			params.put("game_id", game_id);//游戏名称
+			params.put("open_id",open_id );
+			params.put("imei",msi );
+			params.put("channel",channel );
+			params.put("ad_channel",ad_channel  );
+			params.put("proxyVersion",versionCode);
+			params.put("act_type",act_type);
+			params.put("uid",uid);
+			params.put("server_id",server_id );
+			params.put("nick_name",nick_name );
+			Collection<String> keyset= params.keySet();
+			List<String> list = new ArrayList<String>(keyset);
+			Collections.sort(list);
+			String key = "";
+			for(int i=0;i<list.size();i++){
+				if(params.get(list.get(i))==null || params.get(list.get(i))=="") {
+					continue;
+				}
+				key += list.get(i)+"="+params.get(list.get(i))+"&";
+			}
+			key += "app_secret="+app_secret;
+			params.put("sign",Md5Util.getMd5(key));
+			//KnLog.log("排序字段:"+key);
+			new CommonAsyncTask(null, SDK.CANCEL,listener)
 					.execute(new Map[] { params, null, null });
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -618,12 +536,9 @@ public class HttpService {
 	//发送等级url
 	public static void enterGame(Context applicationContext, GameUser gameUser,Handler handler) {
 		try {
-
 			String versionCode = PROXY_VERSION ;
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
-
-
 			String channel = gameInfo.getChannel();//渠道
 			String adchannel = gameInfo.getAdChannel();//广告渠道
 			String mis = DeviceUtil.getDeviceId(); //IMEI码
@@ -633,13 +548,8 @@ public class HttpService {
             int   serverId = gameUser.getServerId();//服务区id
 			int  lv = gameUser.getUserLevel();// 游戏等级
             String gid = gameUser.getGid(); //工会id
-
-
-
 			HashMap<String,String> params =new HashMap<String, String>();
-
 			if(gameUser!=null){
-
 				params.put("game_id",game_id);
 				params.put("uid",uid);
 				params.put("open_id", open_id);
@@ -651,15 +561,8 @@ public class HttpService {
 				params.put("gid", gid);
 				params.put("extraInfo", gameUser.getExtraInfo());
 				params.put("proxyVersion", versionCode);
-
 			//	Map<String, String> update_params1 = Util.getSign( params , app_secret );
 			}
-
-
-
-			KnLog.e("params="+params.toString());
-
-			KnLog.e("enter_url"+SDK.ENTER_GAME);
 			new RecordActivateAsyncTask(applicationContext, handler, SDK.ENTER_GAME)
 					.execute(new Map[] { params , null, null });
 		} catch (Exception e) {
@@ -668,10 +571,6 @@ public class HttpService {
 	}
 
 
-
-
-
-	
 	public static void chanagePwd(Activity activity,
 			String username, String oldpassword , String newpassword , BaseListener listener) {
 		try {
@@ -737,7 +636,7 @@ public class HttpService {
 		UserInfo userInfo = GameSDK.getInstance().getUserInfo();
 		GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
 		
-		String open_id="",game_id="",channel="",ad_channel="",msi="",platform="";
+		String open_id="",game_id="",channel="",ad_channel="",msi="",platform="",appkey= "";
 		String uid="",server_id="";
 		
 		if(userInfo!= null){
@@ -751,27 +650,34 @@ public class HttpService {
 			game_id =  gameInfo.getGameId();
 			channel = gameInfo.getChannel();
 			ad_channel = gameInfo.getAdChannel();
+			appkey = gameInfo.getAppKey();
 		}
 		msi = DeviceUtil.getDeviceId();
-		
-		params.put("game_id", game_id);
-		params.put("channel", channel);
-		params.put("ad_channel", ad_channel);
+		String Product = BuildHelper.getProduct(); //手机制造商
+		String Mode = BuildHelper.getMode(); //手机型号
+		String ip =DeviceUtil.getIPAddress(); //手机ip地址
+		String time = Util.getTimes();
+
+		params.put("game_id", game_id);//游戏名称
+		params.put("channel", channel); //联运渠道
+		params.put("ad_channel", ad_channel); //广告渠道
 		params.put("uid", String.valueOf(uid));
 		params.put("open_id", open_id);
 		params.put("server_id", String.valueOf(server_id));
 		params.put("mac", DeviceUtil.getMacAddress());
 		params.put("platform", platform);
-		params.put("phoneType", DeviceUtil.getPhoneType());
-		params.put("netType", DeviceUtil.getNetWorkType());
-		
-		String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity() );
-		params.put("packageName", Util.getJsonStringByName(appInfo, "packageName") );
-		params.put("versionName", Util.getJsonStringByName(appInfo, "versionName") );
+		//params.put("phoneType", DeviceUtil.getPhoneType()); //手机型号
+		params.put("netType", DeviceUtil.getNetWorkType()); //手机网络状态
+		params.put("app_key",appkey);
+		String appInfo = Util.getAppInfo( GameSDK.getInstance().getActivity());
+		params.put("packageName", Util.getJsonStringByName(appInfo, "packageName") ); //客户端包名
+		params.put("versionName", Util.getJsonStringByName(appInfo, "versionName") ); //客户端版本
 		params.put("versionCode", Util.getJsonStringByName(appInfo, "versionCode") );
-		
-		
-		params.put("msi", msi );
+		params.put("msi", msi ); //手机IMEI码
+		params.put("phone_type",Product+"_"+Mode); //手机型号
+		params.put("ip",ip); //手机型号
+		params.put("time",time); //当前时间
+
 		KnLog.log(" Login params :"+params.toString());
 		
 		return params;

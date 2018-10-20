@@ -30,12 +30,13 @@
 
         </RelativeLayout>
 
-       <!-- <ImageView
+        <ImageView
             android:id="@+id/imageView2"
             android:layout_width="@dimen/dp_110"
             android:layout_height="@dimen/dp_40"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/mc_login_bg" />-->
+
+            android:background="@drawable/mc_login_bg" />
 
 
         <!-- <LinearLayout android:layout_width="wrap_content"
@@ -124,9 +125,8 @@
                     android:textColor="@color/mc_kn_selecte_log" />
             </RelativeLayout>
 
-<!--
 
-            <RelativeLayout
+         <!--   <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -139,7 +139,6 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-
                     android:background="@drawable/mc_visit_login_bg" />
 
                 <TextView
@@ -149,8 +148,7 @@
                     android:layout_centerHorizontal="true"
                     android:text="@string/mc_tips_37"
                     android:textColor="@color/mc_kn_selecte_log" />
-            </RelativeLayout>
--->
+            </RelativeLayout>-->
 
 
         </LinearLayout>

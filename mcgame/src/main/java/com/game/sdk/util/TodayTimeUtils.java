@@ -17,13 +17,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TodayTimeUtils {
 
-
-
-
-
     //获得最后一次保存的日期
     public static Object LastTime(Activity activity ){
-
       Object  lastTime =  SpUtil.get(activity,"LoginTime","2018-03-10");
        return  lastTime;
     }
@@ -31,12 +26,8 @@ public class TodayTimeUtils {
     //获得最后一次账号名
     public static Object   LastName(Activity activity,String name ){
         Object lastName = SpUtil.get(activity,name,"mc");
-
         return lastName;
-
     }
-
-
 
     //获取当前时间
     public static String TodayTime(){
@@ -52,10 +43,18 @@ public class TodayTimeUtils {
 
     //保存勾选后的账号
     public static void saveExitName(Activity activity,String fistname, String lastName) {
-
-
         SpUtil.put(activity,fistname,lastName);
         KnLog.log("保存账号");
+    }
+
+    public static Object getLogout(Activity activity ){
+        Object  isLogout =  SpUtil.get(activity,"isLogout","false");
+        return  isLogout;
+    }
+
+    public static void setLogout(Activity activity ,String isLogout){
+        SpUtil.put(activity,"isLogout",isLogout);
+        KnLog.log("保存注销标识");
     }
 
 }

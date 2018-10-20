@@ -3,7 +3,6 @@ package com.game.sdk.bean;
 public class UserInfo {
 	
 	private String username;
-	
 	private String uid;
 	private int serverId;
 	private String openId;

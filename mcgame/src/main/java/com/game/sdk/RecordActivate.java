@@ -23,12 +23,8 @@ public class RecordActivate {
         return inst;
     }
 
-
-
     public void init( final Activity activity){
         HttpService.recordActivate(activity,handler);
-
-
     }
 
     private Handler handler = new Handler(){

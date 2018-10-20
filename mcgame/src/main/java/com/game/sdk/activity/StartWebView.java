@@ -58,29 +58,19 @@ public class StartWebView extends Activity implements OnClickListener {
 			KnLog.e("非高速网络");
 			final Handler handler = new Handler();
 			handler.postDelayed(new Runnable() {
-
 				public void run() {
 					waitdialog.dismiss();
 				}
 
 			}, 3000);
 		}
-
-
 		initView();
-
 		initwebView();
-
 	}
-
 
 	private void initView(){
-
 		webView = (WebView) findViewById(R.id.webView);
-
-
 	}
-
 
 	private void initwebView(){
 
@@ -95,17 +85,12 @@ public class StartWebView extends Activity implements OnClickListener {
 		// 如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript
 		ws.setJavaScriptEnabled(true);
 		//ws.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
 		webView.setWebViewClient(new myWebViewClient()); //webView加载支付总页面
-
 		webView.addJavascriptInterface(JsInterface, "JsInterface");
 		JsInterface.setWvClientClickListener(new MyWebViewClient());// 这里就是js调用java端的具体实现
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setDomStorageEnabled(true);
-
 		webView.loadUrl(m_url);
-
-
 	}
 
 	@Override
@@ -119,9 +104,7 @@ public class StartWebView extends Activity implements OnClickListener {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			KnLog.e("shouldOverrideUrlLoading  url = " + url);
-
 			 view.loadUrl(url);
-
 			return true;
 		}
 
@@ -139,29 +122,23 @@ public class StartWebView extends Activity implements OnClickListener {
 			// waitdialog.dismiss();
 			LoadingDialog.dismiss();
 		}
-
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-
 		if (webView != null) {
-
 			webView.onResume();
 			webView.resumeTimers();
-
 		}
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-
 		if (webView != null) {
 			webView.onPause();
 			webView.pauseTimers();
-
 		}
 	}
 
@@ -186,20 +163,15 @@ public class StartWebView extends Activity implements OnClickListener {
 		return false;
 	}
 
-
-
 	class MyWebViewClient implements com.game.sdk.util.JsInterface.wvClientClickListener {
-
 
 		@Override
 		public void wvHasClickEnvent(String title, String content, String imageUrl, String url) {
-
 
 		}
 
 		@Override
 		public void wvCloseWebEvent() {
-
 			KnLog.log("关闭支付页面");
 			m_activity.finish();
 			m_activity = null;
@@ -207,7 +179,6 @@ public class StartWebView extends Activity implements OnClickListener {
 
 		@Override
 		public void wvWxWebPayEvent() {
-
 			KnLog.e("浏览器打开微信支付页面");
 			Intent intent = new Intent();
 			intent.setAction(Intent.ACTION_VIEW);

@@ -53,25 +53,16 @@ public class ForgotPasswordActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         activity = this ;
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
        /* if(GameSDK.getInstance().ismScreenSensor()){
-
         }else{
             setRequestedOrientation(GameSDK.getInstance().getmOrientation());
         }*/
 
         setContentView(R.layout.mc_forgot_password_layout);
-
         initView();
-
         initLinerter();
-
-
-
     }
 
 
@@ -81,12 +72,10 @@ public class ForgotPasswordActivity extends Activity {
         m_close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(ForgotPasswordActivity.this,AutoLoginActivity.class);
                  activity.startActivity(intent);
                 activity.finish();
                 activity=null;
-
                 if (activity!=null){
                     activity.finish();
                     activity=null;
@@ -99,7 +88,6 @@ public class ForgotPasswordActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-
                     iscb=true;
                     mphone.setTextColor(getResources().getColor(R.color.mc_Kn_Username));
                   //  memail.setTextColor(getResources().getColor(R.color.kn_selecte_log));
@@ -107,8 +95,6 @@ public class ForgotPasswordActivity extends Activity {
                     m_cb_phone.setChecked(true);
                     m_zh_qd.setEnabled(true);
                     m_zh_qd.setBackgroundColor(getResources().getColor(R.color.mc_Kn_Username));
-
-
                 }else {
                     mphone.setTextColor(getResources().getColor(R.color.mc_kn_selecte_log));
                     m_zh_qd.setEnabled(false);
@@ -133,18 +119,14 @@ public class ForgotPasswordActivity extends Activity {
             }
         });*/
 
-
-
         //确定
         m_zh_qd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 //开始验证是否绑定手机号
                 String phone= m_phone.getText().toString().trim();
                 //查询账号是否绑定手机号
                 HttpService.queryBindAccont(activity.getApplicationContext(), handler, phone);
-
             }
         });
 
@@ -152,18 +134,9 @@ public class ForgotPasswordActivity extends Activity {
         m_phone_ks_code.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
                 checkAccountBindParams(activity,m_phone);
-
-
-                }
-
-
+            }
         });
-
-
 
     }
 
@@ -172,27 +145,16 @@ public class ForgotPasswordActivity extends Activity {
     private void checkAccountBindParams(Activity context, EditText mUsername) {
 
         String username =  m_phone.getText().toString().trim(); //账号或手机号
-
-
         if (ismobile(activity, username)) return;
-
         KnLog.log("判断是否是手机="+ismobile(activity, username));
-
-
-
-
         if (!Util.NameLength(username)){
             Util.ShowTips(context,context.getResources().getString(R.string.mc_tips_4) );
             return ;
         }
-
-
         if (!Util.isAccordName(username)){
             Util.ShowTips(context, context.getResources().getString(R.string.mc_tips_3));
             return ;
         }
-
-
        /* if (!username.matches("^.{6,12}$")) {
             Util.ShowTips(activity, getResources().getString(R.string.mc_tips_4) );
             return;
@@ -202,25 +164,15 @@ public class ForgotPasswordActivity extends Activity {
             Util.ShowTips(activity, getResources().getString(R.string.mc_tips_3));
             return;
         }
-
-
         if(!Util.isNetWorkAvailable(getApplicationContext())){
             Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
             return ;
         }
 */
-
         KnLog.log("判断是否是手机="+ismobile(activity, username));
-
-
-
         LoadingDialog.show(activity, "正在验证手机账号中...", true);
-
         //查询账号是否存在
         HttpService.getUsername(activity.getApplicationContext(), handler,username);
-
-
-
     }
 
 
@@ -288,99 +240,57 @@ public class ForgotPasswordActivity extends Activity {
             Intent intent = null;
             LoadingDialog.dismiss();
             switch (resultCode) {
-
                 case ResultCode.SECURITY_FAIL:
                     Util.ShowTips(activity,msg_content);
                     break;
-
                 case ResultCode.GET_USER_SUCCRESS: //账号存在
-
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                             KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
                             //显示view
                             m_frameLayout.setVisibility(View.VISIBLE);
-
-
                         }
                     }
-
-
-
-
-
-
                     break;
-
                 case ResultCode.GET_USER_NoEXIStTENT: //账号没有被注册过
-
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                             KnLog.log("账号没有被注册过，返回的信息："+msg.obj.toString());
-
                             Util.ShowTips(activity,"该账号没有被注册过,请重新输入！");
-
-
                         }
                     }
-
-
-
                     break;
-
                 case GET_USER_FAIL: //查询出现错误
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onFail(msg.obj.toString());
-
                         }
                     }
-
                     break;
-
-
                 case ResultCode.QUERY_ACCOUNT_BIND_SUCCESS: //绑定了手机号
-
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                                /*  intent = new Intent(m_activity.getApplicationContext(),AccountManagerCurrentActivity.class);
                     String mobile= msg.obj.toString() ;
                     intent.putExtra("userName",m_userNames);
                     intent.putExtra("mobile",mobile);*/
 
                             KnLog.log("账号绑定了手机"+msg.obj.toString());
-
                             String mobile= msg.obj.toString() ; //服务器返回的手机号
                             //手机验证码更改密码
                             Intent intent1 = new Intent(ForgotPasswordActivity.this,PasswordUpdateActivity.class);
                             intent1.putExtra("phone",mobile);
                             startActivity(intent1);
-
                             activity.finish();
-
-
-
-
                         }
                     }
-
-
-
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
-
-
-                            Util.ShowTips(activity,"尚未绑定手机号");
-
-
+                    Util.ShowTips(activity,"尚未绑定手机号");
 				break;
-
                 default:
                     Util.ShowTips(activity,msg_content);
                     break;
@@ -398,17 +308,10 @@ public class ForgotPasswordActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode==KeyEvent.KEYCODE_BACK){
-
             return true;//不执行父类点击事件
         }
         KnLog.log("====屏蔽返回键1");
-
         return super.onKeyDown(keyCode, event);//继续执行父类其他点击事件
-
-
-
-
-
 
     }
 

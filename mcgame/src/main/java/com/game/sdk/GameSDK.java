@@ -19,18 +19,22 @@ import com.game.sdk.activity.AutomaticLoginActivity;
 import com.game.sdk.activity.FastLoginActivity;
 import com.game.sdk.activity.ForgotPasswordActivity;
 import com.game.sdk.activity.StartWebView;
+import com.game.sdk.bean.Data;
 import com.game.sdk.bean.GameInfo;
 import com.game.sdk.bean.GameUser;
 import com.game.sdk.bean.PayInfo;
 import com.game.sdk.bean.UserInfo;
 import com.game.sdk.floatmenu.SusViewMager;
+import com.game.sdk.listener.BaseListener;
 import com.game.sdk.listener.InitListener;
 import com.game.sdk.listener.LoginListener;
 import com.game.sdk.listener.PayListener;
 import com.game.sdk.listener.ReportListener;
+import com.game.sdk.service.HttpService;
 import com.game.sdk.task.SDK;
 import com.game.sdk.util.DBHelper;
 import com.game.sdk.util.KnLog;
+import com.game.sdk.util.TodayTimeUtils;
 import com.game.sdk.util.Util;
 import com.game.sdk.util.WxTools;
 import com.game.sdk_project.SelecteLoginActivity;
@@ -54,7 +58,7 @@ public class GameSDK {
 
 	private SusViewMager mSusViewMager;
 
-	private boolean isAuot=false;
+	public boolean isAuot=false;
 
 	public boolean ismScreenSensor() {
 		return mScreenSensor;
@@ -82,8 +86,7 @@ public class GameSDK {
 		setmOrientation(gameInfo.getOrientation());
 		setGameInfo(gameInfo);
 		SDK.changeConfig(gameInfo.getAdChannelTxt());
-		KnLog.setLogEnable(false);
-
+		KnLog.setLogEnable(true);
 
 		//	读取activity中manifest.xml中某个键值对是否支持横竖屏切换
 		ApplicationInfo ai;
@@ -114,7 +117,6 @@ public class GameSDK {
 
 		//上报数据
 		//RecordActivate.getInstance().init(activity);
-
 	//	mInitListener.onSuccess(0);
 
 
@@ -132,22 +134,14 @@ public class GameSDK {
 		//PAY_API.getInstance().init(activity, getmOrientation(), appid , appkey  , publicKey);
 	}
 
-
-
-
-
-
 	/**
 	 * 跳转到登陆页面
 	 * 
 	 * @param
 	 * @param
 	 */
-	
 	public void login( Activity activity ){
-		
 		KnLog.log(" login ccc");
-		
 		if (!isInited()) {
 			Util.ShowTips(activity, activity.getResources().getString(R.string.mc_tips_16) );
 			return;
@@ -180,17 +174,11 @@ public class GameSDK {
 	
 	public void login(Activity activity, LoginListener listener,SusViewMager.OnLogoutListener logoutListener) {
 
-		KnLog.log(" login cccd");
-
-
-
 		if (listener == null) {
 			KnLog.e("请先设置登录监听");
 			Util.ShowTips(activity, "请先设置登录监听");
 		}
-
 		setmLoginListener(listener);
-
 		if (!isInited()) {
 			Util.ShowTips(activity, activity.getResources().getString(R.string.mc_tips_16));
 			return;
@@ -198,98 +186,112 @@ public class GameSDK {
 
 		String[] usernames = DBHelper.getInstance().findAllUserName();
 		Intent intent = null;
-
-
 		//	数据库中获取用户数据量
 		if (usernames.length == 0) {
-
-
 			intent = new Intent(activity.getApplicationContext(), FastLoginActivity.class);
 			intent.putExtra("selectLogin", "selectLogin");
 			activity.startActivity(intent);
-
 			isAuot=true;
-
-		} else { //自动登录
-
-			KnLog.log("=========自动登录1-======="+isAuot);
-
-			if (!isAuot){
-
-				intent = new Intent(activity, AutomaticLoginActivity.class);
-				activity.startActivity(intent);
-				isAuot=true;
-
-			}else {
-
-				KnLog.log("=========11111========");
-
+		}else {
+			Object isLogout = TodayTimeUtils.getLogout(activity);
+			String result = Util.getAssetsFileContent(activity, "SDKFile/adChannel.png");
+			String game = Util.getJsonStringByName(result, "game");
+			if (game.equals("p3")) {
+				KnLog.log("=========p3渠道配置,注销状态=======" + isLogout.toString());
+				if (isLogout.equals("true")) {
+					KnLog.log("=========显示选择账号-=======");
+					intent = new Intent(activity, AutoLoginActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					intent.putExtra("logout", "logout");
+					activity.startActivity(intent);
+					TodayTimeUtils.setLogout(activity, "false");
+					KnLog.log("sdk注销账号了2");
+				} else {
+					KnLog.log("=========自动登录1-=======" + isAuot);
+					if (!isAuot) {
+						intent = new Intent(activity, AutomaticLoginActivity.class);
+						activity.startActivity(intent);
+						isAuot = false;
+					} else {
+						intent = new Intent(activity, AutomaticLoginActivity.class);
+						activity.startActivity(intent);
+						KnLog.log("=========11111========");
+						isAuot = false;
+					}
+				}
 			}
-
-			if (null == intent) {
-				return;
-			}
-
 		}
 
 		KnLog.log("=========自动登录2-======="+isAuot);
-
        //开启悬浮窗
 		mSusViewMager = SusViewMager.getInstance();
 		if (mSusViewMager !=null){
 			mSusViewMager.setOnLogoutListener(logoutListener);
 		}
 		mSusViewMager.showWithCallback(activity);
-
-
-
 	}
-
 
 	//游戏内切换账号接口
 	public  void McLogout(Activity activity){
-
 		Intent intent1 = new Intent(activity, AutoLoginActivity.class);
 		// intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent1.putExtra("logout","logout");
 		activity.startActivity(intent1);
 
+		//注销
+		HttpService.doCancel("2",new BaseListener() {
+			@Override
+			public void onSuccess(Object result) {
+			}
+
+			@Override
+			public void onFail(Object result) {
+
+			}
+		});
 	}
 
+	//退出
+	public void  McQuit(){
+		//注销
+		KnLog.log("sdk退出");
+		HttpService.doCancel("1",new BaseListener() {
+			@Override
+			public void onSuccess(Object result) {
+				KnLog.log("退出返回数据"+result);
+			}
+
+			@Override
+			public void onFail(Object result) {
+
+			}
+		});
+	}
 
 	public void McLogout(SusViewMager.OnLogoutListener logoutListener){
-
-
 		mSusViewMager = SusViewMager.getInstance();
 		if (mSusViewMager !=null){
 			mSusViewMager.setOnLogoutListener(logoutListener);
 		}
-
-
 		logoutListener.onExitFinish();
+		RecordActivate.getInstance().init(activity);
+
 
 		//延迟1.5S游戏跳转到登录界面后弹出登录框
 		new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
-
 				//防止第一没有账号就点击注销
-
 				Intent intent1 = new Intent(activity, AutoLoginActivity.class);
 				// intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent1.putExtra("logout","logout");
 				activity.startActivity(intent1);
-
 				KnLog.log("sdk注销账号了2");
-
-
 			}
 		},1000);
-
 	}
-
 
 	//悬浮窗注销功能
 	public void setLogoutListener(SusViewMager.OnLogoutListener onLogoutListener){
@@ -299,15 +301,8 @@ public class GameSDK {
 			KnLog.log("注销回调2");
 		}else {
 
-
 		}
-
-
 	}
-
-
-
-
 
 
 	/**
@@ -317,54 +312,18 @@ public class GameSDK {
 	 * @param listener
 	 */
 	public void reportGameRole(Activity activity, GameUser gameUser ,ReportListener listener){
-
 		setmReportListener(listener);
-
 		RecordGame.getInstance().roleInfo(activity,gameUser);
-
-
-
 	}
-
-
-
-
-
-	/**
-	 * 
-	 * @param
-	 */
-
-	/*public void changePwd(Activity activity, String username, boolean hasResult) {
-		
-		if (hasResult) 
-		{
-			Intent intent = new Intent(activity.getApplicationContext(), ChangePwdActivity.class);
-			intent.putExtra("username", username);
-			activity.startActivityForResult(intent, SDK.REQUESTCODE_CHANGEPWD);
-		}
-		else
-		{
-			Intent intent = new Intent(activity.getApplicationContext(), ChangePwdActivity.class);
-			intent.putExtra("username", username);
-			activity.startActivity(intent);
-		}
-		
-	}*/
-
-
-
 
 	// 跳转到快速注册页面
 	public void KsRegister(Activity activity, boolean hasResult) {
-
 		if (hasResult)
 		{
 			Intent intent = new Intent(activity.getApplicationContext(),FastLoginActivity.class);
 			activity.startActivityForResult(intent, SDK.REQUESTCODE_REG);
 			activity.finish();
 		}
-
 	}
 
 	// 跳转到修改密码
@@ -372,24 +331,19 @@ public class GameSDK {
 
 		if (hasResult)
 		{
-
 			Intent intent = new Intent(activity.getApplicationContext(),ForgotPasswordActivity.class);
 			activity.startActivityForResult(intent, SDK.UPDATE_PASSWORD);
 			activity.finish();
-
 		/*	Intent intent = new Intent(activity.getApplicationContext(),PasswordUpdateActivity.class);
 			activity.startActivityForResult(intent, SDK.UPDATE_PASSWORD);
 			activity.finish();*/
 		}
-
 		/*else
 		{
 			Intent intent = new Intent(activity.getApplicationContext(), RegisterActivity.class);
 			activity.startActivity(intent);
 		}*/
 	}
-
-
 
 	/**
 	 * 
@@ -399,17 +353,13 @@ public class GameSDK {
 	 */
 	public void pay(final Activity activity, final PayInfo payInfo,
 			final PayListener payListener) {
-		
 		if (userInfo == null || !userInfo.isLogin()) {
 			Util.ShowTips(activity,  activity.getResources().getString(R.string.mc_tips_17) );
 			return;
 		}
-		
 		setmPayListener(payListener);
 		//PAY_API.getInstance().pay(activity, payInfo, payListener);
-		
 	}
-
 
 	//打开web， 参数： web支付总界面url  与 单独 微信支付url
 	public void openWeb(Activity act , String url ,String wxUrl ){
@@ -426,8 +376,6 @@ public class GameSDK {
 		if (mSusViewMager!=null){
 			mSusViewMager.hideFloat();
 		}
-
-
 	}
 
 	//移除所有悬浮窗
@@ -435,7 +383,6 @@ public class GameSDK {
 		if (mSusViewMager!=null){
 			mSusViewMager.destroyFloat();
 		}
-
 	}
 
 

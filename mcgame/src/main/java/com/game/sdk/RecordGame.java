@@ -9,7 +9,7 @@ import com.game.sdk.service.HttpService;
 import com.game.sdk.util.KnLog;
 
 /**
- * Created by Administrator on 2017/11/25 0025.
+ * 上报数据（暂时没用，使用中间键的上报接口，都一样）
  */
 
 public class RecordGame {

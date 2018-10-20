@@ -113,4 +113,6 @@
     <string name="mc_tips_107">已有账号</string>
     <string name="mc_tips_108">进入游戏</string>
     <string name="mc_tips_109">,已登录成功</string>
+    <string name="mc_tips_110">今日不再提醒</string>
+    <string name="mc_tips_111">账号绑定</string>
 </resources>

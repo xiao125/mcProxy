@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -19,8 +21,11 @@ import android.widget.TextView;
 import com.game.sdk.activity.AutoLoginActivity;
 import com.game.sdk.activity.AutomaticLoginActivity;
 import com.game.sdk.floatmenu.customfloat.BaseFloatDailog;
+import com.game.sdk.listener.BaseListener;
+import com.game.sdk.service.HttpService;
 import com.game.sdk.util.DBHelper;
 import com.game.sdk.util.KnLog;
+import com.game.sdk.util.TodayTimeUtils;
 import com.game.sdk.util.Util;
 import com.game.sdk_project.SelecteLoginActivity;
 import com.game.sdkproxy.R;
@@ -113,18 +118,15 @@ public class SusViewMager {
                                 final String usernames[] = DBHelper.getInstance().findAllUserName();
                                 if( usernames != null && usernames.length >0 ){
                                     username = usernames[0];
-
                                     KnLog.log("========首次调用注销："+username);
                                 }else {
                                     username =null;
                                     KnLog.log("========首次调用注销，没有账号："+username);
                                 }
-
                                 if (username== null){
                                     Util.ShowTips(activity,"请登录！");
                                     return;
                                 }
-
 
                                 LayoutInflater inflater = LayoutInflater.from(activity);
                                 View v = inflater.inflate(R.layout.mc_float_logout_dialog, null); //绑定手机
@@ -132,10 +134,10 @@ public class SusViewMager {
                                 final AlertDialog dia = new AlertDialog.Builder(activity).create();
                                 Button close = (Button) v.findViewById(R.id.mc_logout_account); //取消
                                 Button bin = (Button) v.findViewById(R.id.mc_logout_continue);//确定
-                                // bind.setText("绑定手机");
                                 dia.show();
+                                //将自定义布局设置进去
                                 dia.setContentView(v);
-
+                                // bind.setText("绑定手机");
                                 close.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -146,36 +148,38 @@ public class SusViewMager {
                                 bin.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-
                                         if (null !=mListener){
-
                                             mListener.onExitFinish();
                                             KnLog.log("sdk注销账号了1");
-
                                         }
-
                                         dia.dismiss();
-
-
-
                                         //延迟1.5S游戏跳转到登录界面后弹出登录框
-                                        new Handler().postDelayed(new Runnable() {
+//                                        new Handler().postDelayed(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//
+//                                                //防止第一没有账号就点击注销
+//                                                    Intent intent1 = new Intent(activity, AutoLoginActivity.class);
+//                                                    // intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                                                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                                    intent1.putExtra("logout","logout");
+//                                                    activity.startActivity(intent1);
+//                                                    KnLog.log("sdk注销账号了2");
+//
+//                                            }
+//                                        },1000);
+                                        TodayTimeUtils.setLogout(mActivity,"true");
+                                        //注销
+                                        HttpService.doCancel("2",new BaseListener() {
                                             @Override
-                                            public void run() {
+                                            public void onSuccess(Object result) {
+                                            }
 
-                                                //防止第一没有账号就点击注销
-
-                                                    Intent intent1 = new Intent(activity, AutoLoginActivity.class);
-                                                    // intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                    intent1.putExtra("logout","logout");
-                                                    activity.startActivity(intent1);
-
-                                                    KnLog.log("sdk注销账号了2");
-
+                                            @Override
+                                            public void onFail(Object result) {
 
                                             }
-                                        },1000);
+                                        });
 
 
                                     }

@@ -38,10 +38,8 @@ public class PassWordNewBindMobileAsyncTask extends AsyncTask<Map<String, String
 			
 			try {
 				 String result = HttpUtil.doHttpPost(params[0], this.loginUrl);
-				
 				 KnLog.i("LoginAsyncTask result = " + result);
 				 KnLog.log("LoginAsyncTask result = " + result);
-				 
 				 if(result == null){
 					 Thread.sleep(500L);
 					 if ( i==2 ) {
@@ -51,18 +49,12 @@ public class PassWordNewBindMobileAsyncTask extends AsyncTask<Map<String, String
 					}
 				 }
 				 else{
-					 
 					JSONObject obj = new JSONObject(result);
 					int resultCode = obj.getInt("code");
-					
 					String reason  = obj.getString("reason");
-					
 					msg.obj = reason;
-
-					
 					switch (resultCode) {
 					case ResultCode.SUCCESS:
-		
 						 KnLog.log(" get code OK : OBJ:"+msg.obj);
 						 String userName = obj.getString("user_name");
 						 JSONObject json = new JSONObject();
@@ -71,13 +63,11 @@ public class PassWordNewBindMobileAsyncTask extends AsyncTask<Map<String, String
 						 msg.obj = json.toString();
 						 KnLog.log("obj:"+msg.obj);
 						 msg.what = ResultCode.PASSWORD_NEW_SUCCESS;
-						 
 						break;
 					default:
 						msg.what = ResultCode.PASSWORD_NEW_FAIL;
 						break;
 					}
-					
 					break;
 				 }
 				 

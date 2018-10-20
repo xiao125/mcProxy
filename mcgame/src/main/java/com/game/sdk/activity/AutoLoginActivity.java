@@ -103,43 +103,28 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 		}
 		*/
 		setContentView(R.layout.mc_auto_login_manager);
-
 		m_activity = this ;
-
-		 mlogout = getIntent().getStringExtra("logout");
-
-
-			 initview();
-
-			 initUser();
-
-			 initlistener();
-
-
+		mlogout = getIntent().getStringExtra("logout");
+		initview();
+		initUser();
+		initlistener();
 
 	}
 
 
 	private void initlistener(){
 
-
 			//下拉框，记录多个账号
 			autoLogin_drop.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
-
-
 					if (arrlist.size()>0){
-
-
 						if (pop==null) {
 							if (adapter==null) {
 
 								View view = View.inflate(AutoLoginActivity.this,R.layout.mc_popup_layout,null);
 								etLv = (ListView) view.findViewById(R.id.mc_pop_ls);
-
 								etLv.setBackgroundColor(Color.parseColor("#BCBCBC"));
 								pop=new PopupWindow(view, account_et.getWidth(),
 										LayoutParams.WRAP_CONTENT,true);
@@ -150,9 +135,6 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 								pop.showAsDropDown(account_et,0,5);
 								adapter=new PopupAdapter(m_activity);
 								etLv.setAdapter(adapter);
-
-
-
 								isShow=true;
 							}
 						}else if (isShow) {
@@ -164,14 +146,9 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 							pop.showAsDropDown(account_et,0,5);
 							isShow=true;
 						}
-
-
 					}
-
 				}
 			});
-
-
 	}
 
 
@@ -179,45 +156,29 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 
 	//获取输入框信息
 	private  void EtUser(){
-
 		etname =account_et.getText().toString().trim();
 		etpassword =m_aps.getText().toString().trim();
-
 	}
 
-
 	private void TomastUser(){
-
 		Util.ShowTips(m_activity,etname+",已登录成功");
-
-
 	}
 
 
 	//获取是否提醒信息
 	private void remind(String name){
-
 		Spname = name;
-
 		lastTime =String.valueOf(TodayTimeUtils.LastTime(m_activity));
 		lastName = String.valueOf(TodayTimeUtils.LastName(m_activity,name));
 		todayTime = TodayTimeUtils.TodayTime();
 		KnLog.log("==========lastTime========"+lastName+"  ============lastName="+lastName);
-
-
-
 	}
 
 	//退出保存提醒信息
 	private void exitsave(String spname,String extname){
-
 		TodayTimeUtils.saveExitTime(m_activity);
 		TodayTimeUtils.saveExitName(m_activity,spname,extname);
-
-
 	}
-
-
 
 
 	@Override
@@ -263,56 +224,45 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 		int id = v.getId();
 		Intent intent = null;
 
-			if(id==R.id.login_game_bt){ //登录
-			//	直接登录
-			KnLog.log("直接登录++");
+		if(id==R.id.login_game_bt){ //登录
+		//	直接登录
+		KnLog.log("直接登录++");
 
-			if(!Util.isNetWorkAvailable(getApplicationContext())){
-				Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
-				return ;
-			}
+		if(!Util.isNetWorkAvailable(getApplicationContext())){
+			Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
+			return ;
+		}
+		//判断用户名与密码输入格式
+		//Util.checkRegisterParams(m_activity, account_et,m_aps);
+		//判断用户名与密码输入格式
+		checkAccountBindParams(m_activity,account_et);
+		EtUser();
+		//账号登录
+		HttpService.doLogin(getApplicationContext(), handler,etname ,etpassword);
 
-				//判断用户名与密码输入格式
-			//Util.checkRegisterParams(m_activity, account_et,m_aps);
+	   }else if (id==R.id.mc_up_password){ //忘记密码
 
-				//判断用户名与密码输入格式
-				checkAccountBindParams(m_activity,account_et);
+			GameSDK.getInstance().Update_password(AutoLoginActivity.this,true); //修改密码
+			m_activity.finish();
 
+		}else if (id==R.id.mc_new_account_bt){ //账号注册
 
-				EtUser();
-
-				KnLog.log("=========2账号："+etname+"========2密码："+etpassword);
-
-
-				//账号登录
-			HttpService.doLogin(getApplicationContext(), handler,etname ,etpassword);
-
-
-
-
-		   }else if (id==R.id.mc_up_password){ //忘记密码
-
-				GameSDK.getInstance().Update_password(AutoLoginActivity.this,true); //修改密码
+			Intent	inten=new Intent(m_activity, FastLoginActivity.class);
+			startActivity(inten);
+			if (m_activity!=null) {
 				m_activity.finish();
-
-			}else if (id==R.id.mc_new_account_bt){ //账号注册
-
-				Intent	inten=new Intent(m_activity, FastLoginActivity.class);
-				startActivity(inten);
-				if (m_activity!=null) {
-					m_activity.finish();
-					m_activity=null;
-
-				}
-			}else if (id == R.id.auto_account_et){ //输入账号
-
-				//TODO
-				if (pop!=null){
-					pop.dismiss();
-				}
-
+				m_activity=null;
 
 			}
+		}else if (id == R.id.auto_account_et){ //输入账号
+
+			//TODO
+			if (pop!=null){
+				pop.dismiss();
+			}
+
+
+		}
 
 	}
 
@@ -347,18 +297,11 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 	private boolean ismobile(Activity context, String username) {
 		if(!Util.isMobileNO(username)) { //如果不是手机号
 			//Util.ShowTips(m_activity, getResources().getString(R.string.tips_57)); //如果不是手机号
-
 			//手机号或者账号不能为空
-
 			if (!Util.isName(context,username)){
-
 				return true;
 			}
-
-
-
 		}
-
 		return false;
 	}
 
@@ -395,13 +338,10 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 		}
 		if( usernames != null && usernames.length >0 ){
 			username = usernames[0];
-
 			m_passwords = DBHelper.getInstance().findPwdByUsername(username);
 			account_et.setText(username); //显示账号
 			m_aps.setText(m_passwords);//显示密码
-
 		}
-
 	}
 
 
@@ -422,18 +362,10 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 				if(msg.obj!=null){
 					if(GameSDK.getInstance().getmLoginListener()!=null){
 						GameSDK.getInstance().getmLoginListener().onSuccess( msg.obj.toString() );
-
-
 						//Util.ShowTips(AutoLoginActivity.this, getResources().getString(R.string.mc_tips_10) );
-
 						remind(etname);
-
 						//查询账号是否绑定手机号
 						HttpService.queryBindAccont(m_activity, handler, etname);
-
-
-
-
 					}
 				}
 				break;
@@ -549,29 +481,19 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 
 					break;
 				case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
-
 					if(msg.obj!=null) {
 						if (GameSDK.getInstance().getmLoginListener() != null) {
 							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
 
 							KnLog.log("没有绑定手机");
 							if (null == m_activity) {
-
 							} else {
-
-
 								if(lastTime.equals(todayTime) && lastName.equals( etname )){ //如果两个时间段相等
-
 									KnLog.log("今天不提醒,今天日期"+todayTime+" 最后保存日期:"+lastTime+" 现在登录的账号:"+etname+" 最后保存的账号:"+lastName);
-
 									TomastUser();
 									m_activity.finish();
 									m_activity = null;
-
-
 								}else {
-
-
 									LayoutInflater inflater = LayoutInflater.from(m_activity);
 									View v = inflater.inflate(R.layout.mc_bind_mobile_dialog_ts, null); //绑定手机
 									LinearLayout layout = (LinearLayout) v.findViewById(R.id.visit_dialog);
@@ -589,7 +511,6 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-
 											DBHelper.getInstance().insertOrUpdateUser(etname,etpassword);
 											Intent intent = new Intent(m_activity, BindCellActivity.class);
 											intent.putExtra("userName", etname);
@@ -600,34 +521,24 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 												dia.dismiss();
 												m_activity.finish();
 												m_activity=null;
-
 											}
-
 										}
 									});
 
 									//稍后绑定
 									bind.setOnClickListener(new View.OnClickListener() {
-
 										@Override
 										public void onClick(View v) {
 											// TODO Auto-generated method stub
-
 											//	DBHelper.getInstance().insertOrUpdateUser( name , m_passwords );
 											if (null == m_activity) {
 
 											} else {
-
 												if(iscb){
-
-
 													//保存勾选后的日期
                                                   /*  saveExitTime(getTime());
                                                     saveExiName(username);*/
-
-
 													exitsave(Spname,etname);
-
 													TomastUser();
 													dia.dismiss();
 													m_activity.finish();
@@ -676,18 +587,13 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 											}
 										}
 									});
-
-
 								}
-
-
 							}
 						}
 
 					}
 
 					break;
-
 
 			default:
 

@@ -285,8 +285,6 @@ public class AccounterBindActivity extends Activity implements OnClickListener {
 		m_username = username ;
 		m_password = password ;
 
-
-
 		if(!Util.isNetWorkAvailable(getApplicationContext())){
 			Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
 			return ;
@@ -342,7 +340,6 @@ public class AccounterBindActivity extends Activity implements OnClickListener {
 							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
 
 							Util.ShowTips(m_activity,"账号已经被注册了，请重新输入！");
-
 							KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
 
 						}

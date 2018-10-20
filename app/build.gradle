@@ -39,4 +39,5 @@ dependencies {
     //compile  project(':mcsdkproxy')
     //compile 'com.github.xiao125:mcProxy:v1.2.1'
     compile project(':mcsdkproxy')
+    compile 'ren.yale.android:cachewebviewlib:2.0.3'
 }

@@ -60,25 +60,11 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		activity = this ;
-		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		/*if(GameSDK.getInstance().ismScreenSensor()){
-	
-		}else{
-			setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-		}*/
-		
 		setContentView(R.layout.mc_first_login_new);
-
 		initView();
-
 		initLinerter();
-
-
-		
 		Intent intent = getIntent();
 		if(intent.hasExtra("userName")){
 			m_userNames   = intent.getStringExtra("userName");
@@ -201,13 +187,9 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 		Intent intent = null;
 		if (id == R.id.login_bt) { //登录
 			KnLog.log("login");
-
 			Util.hideEditTextWindow(this, passWordEt);
 			Util.hideEditTextWindow(this, userNameEt);
-
 			checkAccountBindParams(activity, userNameEt, passWordEt);
-
-
 			/*Util.hideEditTextWindow(this, passWordEt);
 			checkLoginParams(FirstLoginActivity.this, userNameEt, passWordEt);*/
 			KnLog.log("login End");
@@ -241,8 +223,6 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 
 		String username = mUsername.getText().toString();
 		String password = mPassword.getText().toString();
-
-
 		if(TextUtils.isEmpty(username)){
 			Util.ShowTips(activity,getResources().getString(R.string.mc_tips_100));
 			return ;
@@ -278,24 +258,18 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 
 		HttpService.doLogin(getApplicationContext(), handler, username, password);
 
-
 	}
 
 
 	private boolean ismobile(Activity context, String username) {
 		if(!Util.isMobileNO(username)) { //如果不是手机号
 			//Util.ShowTips(m_activity, getResources().getString(R.string.tips_57)); //如果不是手机号
-
 			if(!Util.isName(context,username)){
-
 				return true;
 			}
-
 		}
 		return false;
 	}
-
-
 
 
 	
@@ -310,17 +284,11 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 				if(msg.obj!=null){
 					if(GameSDK.getInstance().getmLoginListener()!=null){
 						GameSDK.getInstance().getmLoginListener().onSuccess( msg.obj.toString() );
-
 						Util.ShowTips(activity,"登录成功！");
-
 						activity.finish();
 						activity=null;
-
 						//查询账号是否绑定手机号
 						//HttpService.queryBindAccont(activity.getApplicationContext(), handler, m_userName);
-
-
-
 					}else{
 //						KnLog.log("请先设置登录回调");
 					}

@@ -54,7 +54,6 @@ public class FastLoginActivity extends Activity {
     private ImageView select_close,m_phone_ks_close;
     private Button user_register,phone_register,phone_ks_code,kn_user_zc;
     private LinearLayout user_layout,phone_layout;
-
     private TextView masscount;
     private EditText ks_user,kn_password,phone_ks_register,phone_ks_register_code,phone_ks_register_password;
     private boolean isVISIBLE=false;
@@ -63,13 +62,9 @@ public class FastLoginActivity extends Activity {
     public  static   String    m_passWord ;
     public String m_phone;
     public String m_pw;
-
     public String randName;
-
     private  boolean isCountDown=false; //倒计时标识
-
     public static final String allChar = "0123456789";
-
     //声明一个SharedPreferences对象和一个Editor对象
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
@@ -78,8 +73,6 @@ public class FastLoginActivity extends Activity {
     private String todayTime;//当前日期
     private String lastName; //最后退出名字
     private  String Spname; //存入sp中的key名
-
-
 
 
     /**
@@ -92,169 +85,97 @@ public class FastLoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-
         m_activity = this ;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-      /*  if(GameSDK.getInstance().ismScreenSensor()){
-
-        }else{
-            setRequestedOrientation(GameSDK.getInstance().getmOrientation());
-        }*/
-
         setContentView(R.layout.mc_fast_login);
-
         initView();
-
         //进入快速界面，默认用户名注册按钮不可点击
         user_register.setEnabled(false);
         RandName();
-
         initLinster();
-
-
-
     }
-
 
     //获取是否提醒信息
     private void remind(String name){
-
-         Spname = name;
-
+        Spname = name;
         lastTime =String.valueOf(TodayTimeUtils.LastTime(m_activity));
         lastName = String.valueOf(TodayTimeUtils.LastName(m_activity,name));
         todayTime = TodayTimeUtils.TodayTime();
         KnLog.log("==========lastTime========"+lastName+"  ============lastName="+lastName);
-
-
-
     }
 
     //退出保存提醒信息
     private void exitsave(String spname,String extname){
-
         TodayTimeUtils.saveExitTime(m_activity);
         TodayTimeUtils.saveExitName(m_activity,spname,extname);
-
-
     }
 
 
-
-
     private void TomastUser(){
-
         Util.ShowTips(m_activity,m_userName+",已登录成功");
-
-
     }
 
 
     private void initLinster() {
-
-
-
         KSUser();
-
-
-
         phone_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 user_register.setBackgroundColor(getResources().getColor(R.color.mc_kn_text));
                 phone_register.setBackgroundColor(getResources().getColor(R.color.mc_Kn_Username));
                 user_register.setEnabled(true);
                 user_layout.setVisibility(View.INVISIBLE); //隐藏
                 phone_layout.setVisibility(View.VISIBLE);//显示
                 isVISIBLE=true;
-
                 phone_ks_code.setVisibility(View.VISIBLE); //显示倒计时
-
-
                 KnLog.log("手机注册。。。。。，isVISIBLE="+isVISIBLE);
             }
-
-
-
         });
-
 
         user_register.setOnClickListener(new View.OnClickListener() { //用户名注册
             @Override
             public void onClick(View view) {
-
                 //随机参数一组数字
-
-
                 user_register.setBackgroundColor(getResources().getColor(R.color.mc_Kn_Username));
                 phone_register.setBackgroundColor(getResources().getColor(R.color.mc_kn_text));
                 user_layout.setVisibility(View.VISIBLE);//显示
                 phone_layout.setVisibility(View.INVISIBLE); //隐藏
                 isVISIBLE=false;
-
                 //如果用户注册界面显示时且手机注册界面倒计时正在进行时，隐藏倒计时
                 if(isCountDown && (user_layout.getVisibility()==View.VISIBLE)){
                     phone_ks_code.setVisibility(View.INVISIBLE);
                 }
-
                 KnLog.log("用户名注册。。。。。，isVISIBLE="+isVISIBLE);
-
             }
         });
-
-
-
-
-
 
         kn_user_zc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (user_layout.getVisibility()==View.VISIBLE){
                     KnLog.log("开始用户名注册");
                     //用户名注册
                     UserRegister();
-
                 }else if ( phone_layout.getVisibility()==View.VISIBLE){
-
                     KnLog.log("开始手机注册");
                     //手机注册
                     MobileRegister();
-
                 }
-
-
-
             }
         });
-
-
-
-
-
-
 
         //验证码倒计时
         phone_ks_code.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String cell_Num = phone_ks_register.getText().toString().trim();
-
                 if (isPhone(cell_Num)){
                     return;
                 }
-
                 countdownTimer();
                 sendcod();
-
             }
-
-
         });
-
 
         select_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -269,7 +190,6 @@ public class FastLoginActivity extends Activity {
                 phone_ks_register_code.setText("");
             }
         });
-
 
         masscount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,12 +210,10 @@ public class FastLoginActivity extends Activity {
 
 
     private  void RandName(){
-
         //获取随机有户名
         SimpleDateFormat formatter   =   new   SimpleDateFormat("yyyyMMddHHmmss");
         Date curDate =  new Date(System.currentTimeMillis());
         String   time  =   formatter.format(curDate);
-
         KnLog.log("获取时间："+time);
         HttpService.RandUserName(m_activity,handler,String.valueOf(time));
 
@@ -309,17 +227,12 @@ public class FastLoginActivity extends Activity {
     {
         StringBuffer sb = new StringBuffer();
         Random random = new Random();
-
         for (int i = 0; i < length; i++)
-
         {
             sb.append(allChar.charAt(random.nextInt(allChar.length())));
-
         }
        // String userpasword ="mc"+sb.toString();
         kn_password.setText(sb.toString()); //默认填写密码
-
-
     }
 
 
@@ -346,7 +259,6 @@ public class FastLoginActivity extends Activity {
     private void KSUser(){
 
         ks_user.setOnClickListener( new View.OnClickListener() {
-
             @Override
             public void onClick(View v ) {
                 // TODO Auto-generated method stub
@@ -355,7 +267,6 @@ public class FastLoginActivity extends Activity {
         } );
 
         ks_user.setOnEditorActionListener( new TextView.OnEditorActionListener() {
-
             @Override
             public boolean onEditorAction(TextView v , int actionId, KeyEvent event ) {
                 // TODO Auto-generated method stub
@@ -369,7 +280,6 @@ public class FastLoginActivity extends Activity {
         } );
 
         kn_password.setOnClickListener( new View.OnClickListener() {
-
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
@@ -378,9 +288,7 @@ public class FastLoginActivity extends Activity {
         } );
 
 
-
         kn_password.setOnEditorActionListener( new TextView.OnEditorActionListener() {
-
             @Override
             public boolean onEditorAction(TextView v , int actionId , KeyEvent event ) {
                 // TODO Auto-generated method stub
@@ -408,26 +316,17 @@ public class FastLoginActivity extends Activity {
         user_register = (Button) findViewById(R.id.kn_selecte_user_register); //用户名注册
         ks_user= (EditText) findViewById(R.id.ks_user); //用户名
         kn_password = (EditText) findViewById(R.id.kn_password); //用户名密码
-
         select_close = (ImageView) findViewById(R.id.select_close); //清除账号
-
-
         phone_register = (Button) findViewById(R.id.kn_selecte_phone_register);//手机注册
         phone_ks_register= (EditText) findViewById(R.id.phone_ks_register); //手机号
         phone_ks_register_code= (EditText) findViewById(R.id.phone_ks_register_code); //获取到的验证码
         phone_ks_register_password= (EditText) findViewById(R.id.phone_ks_register_password);//输入的密码
         phone_ks_code = (Button) findViewById(R.id.phone_ks_code); //验证码
         m_phone_ks_close = (ImageView) findViewById(R.id.phone_ks_close); //清除验证码
-
-
         user_layout = (LinearLayout) findViewById(R.id.user_register_layout); //用户名注册view
         phone_layout = (LinearLayout) findViewById(R.id.phone_register_layout); //手机号注册view
-
         kn_user_zc = (Button) findViewById(R.id.kn_user_zc); //注册按钮
-
         masscount =(TextView)findViewById(R.id.yy_username); //已有账号
-
-
     }
 
     /**
@@ -471,25 +370,20 @@ public class FastLoginActivity extends Activity {
      */
 
     private void sendcod(){
-
         String cell_Num = phone_ks_register.getText().toString().trim();
         if (isPhone(cell_Num)){
             return;
         }
-
         LoadingDialog.show(m_activity, "获取验证码中...", true);
         HttpService.getSecCode(m_activity, handler,cell_Num,newSdk);
-
     }
 
 
     //判断手机号是否正确
     private  void isphone( String cell_Num){
 
-
         if(TextUtils.isEmpty(cell_Num)){
             Util.ShowTips(m_activity,getResources().getString(R.string.mc_tips_58));
-
             return ;
         }
         if(!Util.isMobileNO(cell_Num)){
@@ -498,36 +392,21 @@ public class FastLoginActivity extends Activity {
         }
         if(!Util.isNetWorkAvailable(getApplicationContext())){
             Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
-
             return ;
         }
-
-
     }
-
-
 
     //用户名与密码，注册
     private void UserRegister(){
-
         Util.hideEditTextWindow(this,kn_password);
         checkRegisterParams(m_activity,ks_user,kn_password);
-
-
-
     }
 
     //手机号注册
     private void MobileRegister(){
-
         Util.hideEditTextWindow(this,phone_ks_register_password);
-
         checkRegisterParams(m_activity,phone_ks_register,phone_ks_register_password,phone_ks_register_code);
-
-
-
     }
-
 
     //判断手机号，验证码，密码
     private void checkRegisterParams(Activity context, EditText phone, EditText passWordEt,EditText code) {
@@ -547,19 +426,12 @@ public class FastLoginActivity extends Activity {
             return;
         }
 
-
-
        // String pw = Md5Util.getMd5(password);
         m_phone = userphone ;
         m_pw = password ;
-
-        KnLog.log("手机注册的用户名："+userphone+"  密码："+password);
-
         LoadingDialog.show(m_activity, "注册中...",true);
-
         //手机注册
         HttpService.doMobileRegister(getApplicationContext(), handler, userphone,security_code, password);
-
     }
 
 
@@ -568,33 +440,20 @@ public class FastLoginActivity extends Activity {
 
         //注意：判断顺序
         String username = userNameEt.getText().toString();
-
         if(!Util.isName(context,username)){
-
             return;
         }
-
         String password = passWordEt.getText().toString();
-
         if (!Util.isUserPassword(context,password)){
             return;
         }
 
-
      //  String  pw = Md5Util.getMd5(password);
         m_userName = username ;
         m_passWord = password ;
-
         KnLog.log("用户名注册的密码="+password);
-
         LoadingDialog.show(m_activity, "注册中...",true);
-
-
         HttpService.doRegister(getApplicationContext(), handler, username, password);
-
-
-
-
     }
 
 
@@ -664,7 +523,6 @@ public class FastLoginActivity extends Activity {
             String msg_content = msg.obj.toString();
             int resultCode = msg.what;
             Intent intent = null;
-
             LoadingDialog.dismiss();
             Log.e("sadaaaawdawf", msg_content+"////"+resultCode);
             switch (resultCode) {
@@ -738,33 +596,19 @@ public class FastLoginActivity extends Activity {
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-
-
                             LoadingDialog.dismiss();
-
                             setResult(Activity.RESULT_OK);
                             DBHelper.getInstance().insertOrUpdateUser( m_userName , m_passWord );
-
                             remind(m_userName);
-
                             //账号登录
                             HttpService.doLogin(getApplicationContext(), loghandler,m_userName ,m_passWord);
-
-
                             //TODO
                             //查询账号是否绑定手机号
                           //  HttpService.queryBindAccont(m_activity, handler, m_userName);
-
-
-
                             //  GameSDK.instance.login(FastLoginActivity.this); //跳转到免密码登录
                             //	执行自动登录
                         }
                     }
-
-
-
                     break;
                 case ResultCode.FAIL: ////注册失败
 
@@ -776,31 +620,20 @@ public class FastLoginActivity extends Activity {
                         }
                     }
 
-
-
                     break;
 
                 case ResultCode.MOBILE_REG_SUCCRESS: //手机注册成功
-
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-
                             setResult(Activity.RESULT_OK);
-
                             KnLog.log("手机注册成功1");
-
                             //添加手机账号
                             DBHelper.getInstance().insertOrUpdateUser( m_phone ,m_pw );
                             Util.ShowTips(FastLoginActivity.this, getResources().getString(R.string.mc_tips_15) );
-
                             GameSDK.instance.login(FastLoginActivity.this); //跳转到免密码登录
-
                         }
                     }
-
-
 
                     break;
 
@@ -814,7 +647,6 @@ public class FastLoginActivity extends Activity {
                         }
                     }
 
-
                     break;
 
                 case ResultCode.RANDUSERNAME_SUCCESS: //获取分配用户名成功
@@ -822,17 +654,12 @@ public class FastLoginActivity extends Activity {
                     if(msg.obj!=null) {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                           //  GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                             KnLog.log("获取分配用户名成功========"+msg.obj.toString());
                             randName =msg.obj.toString();
                             ks_user.setText(randName); //显示用户名
                             generateMixString(6);//密码客户端随机生成
-
                         }
                     }
-
-
-
                     break;
 
                 case ResultCode.RANDUSERNAME_FAIL: //获取分配用户名失败

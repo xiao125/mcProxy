@@ -34,6 +34,7 @@ public class SDK {
     public static String RECORD_ACTIVATE="http://"+OMD_URL+"/api/record_activate.php";//上报设备激活接口
 	public static String ENTER_GAME="http://"+OMD_URL+"/api/sendlv.php";//上报游戏信息
 
+	public static String CANCEL="http://"+OMD_URL+"/api/open_platform/datacenter/cancel.php";//注销接口
 
 	public static final int LANDSCAPE = 0;
 	public static final int PORTRAIT = 1;

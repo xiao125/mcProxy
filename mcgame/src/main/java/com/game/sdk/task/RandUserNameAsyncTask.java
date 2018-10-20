@@ -56,7 +56,6 @@ public class RandUserNameAsyncTask extends AsyncTask<Map<String, String>, Void, 
 					switch (resultCode) {
 					case ResultCode.SUCCESS:
 					    String username=obj.getString("user_name"); //用户名
-
 						 msg.what = ResultCode.RANDUSERNAME_SUCCESS;
 						 msg.obj=username;
 

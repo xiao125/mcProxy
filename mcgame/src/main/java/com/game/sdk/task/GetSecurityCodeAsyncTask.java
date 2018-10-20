@@ -51,8 +51,6 @@ public class GetSecurityCodeAsyncTask extends AsyncTask<Map<String, String>, Voi
 					}
 				 }
 				 else{
-					
-					
 					JSONObject obj = new JSONObject(result);
 					int resultCode = obj.getInt("code");
 					String reason  = obj.getString("reason");
