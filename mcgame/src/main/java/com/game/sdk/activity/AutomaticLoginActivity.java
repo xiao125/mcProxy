@@ -31,6 +31,9 @@ import com.game.sdk.util.TodayTimeUtils;
 import com.game.sdk.util.Util;
 import com.game.sdkproxy.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,8 +42,6 @@ import java.util.Date;
  */
 
 public class AutomaticLoginActivity extends Activity {
-
-
     private Activity m_activity = null ;
     private static  String username =null;
     private static  String password =null;
@@ -146,19 +147,16 @@ public class AutomaticLoginActivity extends Activity {
                         if (GameSDK.getInstance().getmLoginListener() != null) {
                             GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
                             LoadingDialog.dismiss();//关闭
-
                             Util.ShowTips(m_activity,username+"登录成功！");
                             //查询账号是否绑定手机号
                             HttpService.queryBindAccont(m_activity.getApplicationContext(), handler, username);
-
                         }
                     }
                     break;
 
                 case ResultCode.NONEXISTENT: //账号不存在
-
                     Util.ShowTips(m_activity,"账号不存在！");
-
+                    StartActivitys(m_activity);
                     break;
 
                 case ResultCode.FAIL:
@@ -169,53 +167,58 @@ public class AutomaticLoginActivity extends Activity {
                             if(null==m_activity){
 
                             }else{
-
-                                m_activity.finish();
-                                m_activity = null ;
-
+                                try {
+                                    JSONObject jsons = new JSONObject(msg.obj.toString());
+                                    String reason= jsons.getString("reason");
+                                    Util.ShowTips(m_activity,reason);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                StartActivitys(m_activity);
                             }
                         }else{
 //						KnLog.e("请先设置登录回调");
                         }
                     }
                     break;
-
                 case ResultCode.UNKNOW:
                     if(null==m_activity){
-
                     }else{
-
                         Util.ShowTips(m_activity,msg.obj.toString());
-
+                        m_activity.finish();
+                        m_activity = null ;
                     }
 
                     break;
+                case ResultCode.FAILS: //账号密码错误
+                    if(msg.obj!=null)
+                    {
+                        if(null==m_activity){
+                        }else{
+                            try {
+                                JSONObject jsons = new JSONObject(msg.obj.toString());
+                                String reason= jsons.getString("reason");
+                                Util.ShowTips(m_activity,reason);
+                                StartActivitys(m_activity);
 
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    break;
 
                 case ResultCode.QUERY_ACCOUNT_BIND_SUCCESS: //绑定了手机号
-
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-                            String mobile= msg.obj.toString() ;
-
-                            if(null==m_activity){
-
-                            }else{
-
-                                m_activity.finish();
-                                m_activity = null ;
-
-                            }
-
+                        if(null==m_activity){
+                        }else{
+                            m_activity.finish();
+                            m_activity = null ;
                         }
                     }
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
                             KnLog.log("没有绑定手机");
                             if (null == m_activity) {
                             } else {
@@ -303,12 +306,8 @@ public class AutomaticLoginActivity extends Activity {
                                             }
                                         }
                                     });
-
                                 }
-
                             }
-                        }
-
                     }
                     break;
                 default:
@@ -317,6 +316,13 @@ public class AutomaticLoginActivity extends Activity {
         }
     };
 
+    //跳转免密码登录页面
+    private  void  StartActivitys(Activity activity){
+        Intent intents = new Intent(activity, AutoLoginActivity.class);
+        startActivity(intents);
+        activity.finish();
+
+    }
 
 
 }

@@ -170,7 +170,7 @@ public class SusViewMager {
 //                                        },1000);
                                         TodayTimeUtils.setLogout(mActivity,"true");
                                         //注销
-                                        HttpService.doCancel("2",new BaseListener() {
+                                        HttpService.doCancel(mActivity,"2",new BaseListener() {
                                             @Override
                                             public void onSuccess(Object result) {
                                             }

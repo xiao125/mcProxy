@@ -336,77 +336,43 @@ public class AccounterBindActivity extends Activity implements OnClickListener {
 
 				case ResultCode.GET_USER_SUCCRESS: //账号已经被注册过了
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-							Util.ShowTips(m_activity,"账号已经被注册了，请重新输入！");
-							KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
-
-						}
+						Util.ShowTips(m_activity,"账号已经被注册了，请重新输入！");
+						KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
 					}
-
-
-
 					break;
 
 				case ResultCode.GET_USER_NoEXIStTENT: //账号没有被注册过
-
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
 							KnLog.log("账号没有被注册过，返回的信息："+msg.obj.toString());
-
 							String username= userNameEt.getText().toString().trim(); //账号
 							String  password=passWordEt.getText().toString().trim(); //密码
 							String ps = Md5Util.getMd5(password);
-
 							KnLog.log("判断是否是手机："+ismobile(m_activity, username));
-
 							if (Util.isMobileNO(username)){ //
-
 								KnLog.log("是手机号："+username+" 密码="+ps);
-
 								//跳转发送验证码注册
 								Intent intent1 =new Intent(AccounterBindActivity.this,TourtistRegActivity.class);
 								intent1.putExtra("phone",username);
 								intent1.putExtra("password",ps);
-
 								startActivity(intent1);
-
 								KnLog.log("跳转页面：");
 
-
-
-
 							}else {
-
-
 								KnLog.log("不是手机号：");
-
 								String pd = Md5Util.getMd5(password);
 								m_userName = username ;
 								m_passWord = pd ;
 								LoadingDialog.show(m_activity, "绑定中...",true);
-
 								//游客绑定账号
 								HttpService.visitorBindAccount(getApplicationContext(), handler, username, pd );
-
-
 								//直接用户名与密码，注册账号
 								//	HttpService.doRegister(getApplicationContext(), handler, username, pd);
-
-
 							}
-
-
-						}
 					}
 
 					break;
 
 				case ResultCode.GET_USER_FAIL: //查询账号返回错误
-
 					if(msg.obj!=null) {
 						if (GameSDK.getInstance().getmLoginListener() != null) {
 							GameSDK.getInstance().getmLoginListener().onFail(msg.obj.toString());
@@ -418,21 +384,12 @@ public class AccounterBindActivity extends Activity implements OnClickListener {
 
 				case ResultCode.VISITOR_BIND_SUCCESS: //游客绑定账号成功
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-
-							String result=	msg.obj.toString();
-							KnLog.log("游客绑定账号成功:"+result);
-
-							//保存用户名与密码
-							DBHelper.getInstance().insertOrUpdateUser( m_userName , m_passWord );
-							Util.ShowTips(AccounterBindActivity.this, getResources().getString(R.string.mc_tips_15) );
-
-							GameSDK.instance.login(AccounterBindActivity.this); //跳转到免密码登录
-
-
-						}
+						String result=	msg.obj.toString();
+						KnLog.log("游客绑定账号成功:"+result);
+						//保存用户名与密码
+						DBHelper.getInstance().insertOrUpdateUser( m_userName , m_passWord );
+						Util.ShowTips(AccounterBindActivity.this, getResources().getString(R.string.mc_tips_15) );
+						GameSDK.instance.login(AccounterBindActivity.this); //跳转到免密码登录
 					}
 
 					break;
@@ -442,10 +399,8 @@ public class AccounterBindActivity extends Activity implements OnClickListener {
 					if(msg.obj!=null) {
 						if (GameSDK.getInstance().getmLoginListener() != null) {
 							GameSDK.getInstance().getmLoginListener().onFail(msg.obj.toString());
-
 							String result1=	msg.obj.toString();
 							KnLog.log("游客绑定账号失败:"+result1);
-
 							Util.ShowTips(AccounterBindActivity.this,"绑定账号失败:"+result1 );
 						}
 					}

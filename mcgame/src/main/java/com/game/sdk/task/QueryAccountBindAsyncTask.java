@@ -54,15 +54,12 @@ public class QueryAccountBindAsyncTask extends AsyncTask<Map<String, String>, Vo
 					 
 					JSONObject obj = new JSONObject(result);
 					int resultCode = obj.getInt("code");
-					
 					/*String reason  = obj.getString("reason");*/
 					msg.obj = obj ;
-					
 					switch (resultCode) {
 					case ResultCode.SUCCESS:
 						 KnLog.log(" get code OK ");
 						 msg.what = ResultCode.QUERY_ACCOUNT_BIND_SUCCESS;
-
 						 String mobile = obj.getString("mobile");
 						 msg.obj = mobile ;
 

@@ -47,6 +47,9 @@ import com.game.sdk.util.Util;
 import com.game.sdk_project.SelecteLoginActivity;
 import com.game.sdkproxy.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -226,19 +229,20 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 
 		if(id==R.id.login_game_bt){ //登录
 		//	直接登录
-		KnLog.log("直接登录++");
+		KnLog.log("直接登录++"+!Util.isNetWorkAvailable(getApplicationContext()));
 
 		if(!Util.isNetWorkAvailable(getApplicationContext())){
 			Util.ShowTips(getApplicationContext(),getResources().getString(R.string.mc_tips_34).toString());
 			return ;
+		}else {
+			//判断用户名与密码输入格式
+			//Util.checkRegisterParams(m_activity, account_et,m_aps);
+			//判断用户名与密码输入格式
+			checkAccountBindParams(m_activity,account_et);
+			EtUser();
+			//账号登录
+			HttpService.doLogin(getApplicationContext(), handler,etname ,etpassword);
 		}
-		//判断用户名与密码输入格式
-		//Util.checkRegisterParams(m_activity, account_et,m_aps);
-		//判断用户名与密码输入格式
-		checkAccountBindParams(m_activity,account_et);
-		EtUser();
-		//账号登录
-		HttpService.doLogin(getApplicationContext(), handler,etname ,etpassword);
 
 	   }else if (id==R.id.mc_up_password){ //忘记密码
 
@@ -391,10 +395,14 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 						if(null==m_activity){
 							
 						}else{
-							
-							m_activity.finish();
-							m_activity = null ;
-							
+							try {
+								JSONObject jsons = new JSONObject(msg.obj.toString());
+								String reason= jsons.getString("reason");
+								Util.ShowTips(m_activity,reason);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+
 						}
 					}else{
 //						KnLog.e("请先设置登录回调");
@@ -449,9 +457,7 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 				if(null==m_activity){
 					
 				}else{
-					
 					Util.ShowTips(m_activity,msg.obj.toString());
-					
 				}
 				
 				break;
@@ -460,20 +466,12 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 				case ResultCode.QUERY_ACCOUNT_BIND_SUCCESS: //绑定了手机号
 
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-							String mobile= msg.obj.toString() ;
-
-							if(null==m_activity){
-
-							}else{
-
-								TomastUser();
-								m_activity.finish();
-								m_activity = null ;
-
-							}
+						String mobile= msg.obj.toString() ;
+						if(null==m_activity){
+						}else{
+							TomastUser();
+							m_activity.finish();
+							m_activity = null ;
 
 						}
 					}
@@ -482,9 +480,6 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 					break;
 				case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
 							KnLog.log("没有绑定手机");
 							if (null == m_activity) {
 							} else {
@@ -504,8 +499,10 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 									ImageView close = (ImageView)v.findViewById(R.id.mc_da_lose);//关闭
 									CheckBox mcheckBox = (CheckBox)v.findViewById(R.id.mc_tx);//选择今日不提醒
 
-									dia.show();
-									dia.setContentView(v);
+									if(m_activity!=null){
+										dia.show();
+										dia.setContentView(v);
+									}
 									cont.setOnClickListener(new View.OnClickListener() {
 
 										@Override
@@ -590,8 +587,6 @@ public class AutoLoginActivity extends Activity implements View.OnClickListener 
 								}
 							}
 						}
-
-					}
 
 					break;
 

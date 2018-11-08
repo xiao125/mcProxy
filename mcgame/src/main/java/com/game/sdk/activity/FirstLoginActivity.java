@@ -253,9 +253,7 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 		m_userName = username ;
 		m_password = password;
 		KnLog.log("输入账号登录username="+username+" password="+password);
-
 		LoadingDialog.show(activity, "登录中...",true);
-
 		HttpService.doLogin(getApplicationContext(), handler, username, password);
 
 	}
@@ -299,11 +297,7 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 				case ResultCode.NONEXISTENT: //账号不存在
 
 					if(msg.obj!=null) {
-						if (GameSDK.getInstance().getmLoginListener() != null) {
-							GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
 							//	Util.ShowTips(activity,"账号不存在！");
-
 							//提示绑定手机弹窗
 							LayoutInflater inflater = LayoutInflater.from(activity);
 							View v = inflater.inflate(R.layout.mc_bind_mobile_dialog, null);
@@ -354,24 +348,11 @@ public class FirstLoginActivity extends Activity implements OnClickListener {
 									if(null==activity){
 
 									}else{
-
-
 										dia.dismiss();
-
-
 									}
-
-
 								}
 							});
-
-
-						}
 					}
-
-
-
-
 					break;
 
 			case ResultCode.FAIL:

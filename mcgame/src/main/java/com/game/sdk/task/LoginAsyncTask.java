@@ -43,10 +43,11 @@ public class LoginAsyncTask extends AsyncTask<Map<String, String>, Void, Void>  
 				 if(result == null){
 					 Thread.sleep(500L);
 					 if ( i==2 ) {
+						 KnLog.e("请检查网络是否连接++++++++++");
 						 msg.what = ResultCode.FAIL;
 						 msg.obj = new Result(ResultCode.NET_DISCONNET,  context.getResources().getString(R.string.mc_tips_34).toString() ).toString() ;
 						 break;
-					}
+					 }
 				 }
 				 else{
 					msg.obj = result;

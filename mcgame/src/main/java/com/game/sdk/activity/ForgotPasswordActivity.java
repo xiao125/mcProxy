@@ -245,21 +245,15 @@ public class ForgotPasswordActivity extends Activity {
                     break;
                 case ResultCode.GET_USER_SUCCRESS: //账号存在
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-                            KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
-                            //显示view
-                            m_frameLayout.setVisibility(View.VISIBLE);
-                        }
+                        KnLog.log("账号已经被注册过了，返回的信息："+msg.obj.toString());
+                        //显示view
+                        m_frameLayout.setVisibility(View.VISIBLE);
                     }
                     break;
                 case ResultCode.GET_USER_NoEXIStTENT: //账号没有被注册过
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-                            KnLog.log("账号没有被注册过，返回的信息："+msg.obj.toString());
-                            Util.ShowTips(activity,"该账号没有被注册过,请重新输入！");
-                        }
+                        KnLog.log("账号没有被注册过，返回的信息："+msg.obj.toString());
+                        Util.ShowTips(activity,"该账号没有被注册过,请重新输入！");
                     }
                     break;
                 case GET_USER_FAIL: //查询出现错误
@@ -271,9 +265,7 @@ public class ForgotPasswordActivity extends Activity {
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_SUCCESS: //绑定了手机号
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-                               /*  intent = new Intent(m_activity.getApplicationContext(),AccountManagerCurrentActivity.class);
+                        /*  intent = new Intent(m_activity.getApplicationContext(),AccountManagerCurrentActivity.class);
                     String mobile= msg.obj.toString() ;
                     intent.putExtra("userName",m_userNames);
                     intent.putExtra("mobile",mobile);*/
@@ -285,7 +277,6 @@ public class ForgotPasswordActivity extends Activity {
                             intent1.putExtra("phone",mobile);
                             startActivity(intent1);
                             activity.finish();
-                        }
                     }
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号

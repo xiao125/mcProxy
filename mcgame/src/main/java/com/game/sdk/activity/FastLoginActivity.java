@@ -171,9 +171,10 @@ public class FastLoginActivity extends Activity {
                 String cell_Num = phone_ks_register.getText().toString().trim();
                 if (isPhone(cell_Num)){
                     return;
+                }else {
+                    countdownTimer();
+                    sendcod();
                 }
-                countdownTimer();
-                sendcod();
             }
         });
 
@@ -373,9 +374,11 @@ public class FastLoginActivity extends Activity {
         String cell_Num = phone_ks_register.getText().toString().trim();
         if (isPhone(cell_Num)){
             return;
+        }else {
+            LoadingDialog.show(m_activity, "获取验证码中...", true);
+            HttpService.getSecCode(m_activity, handler,cell_Num,newSdk);
         }
-        LoadingDialog.show(m_activity, "获取验证码中...", true);
-        HttpService.getSecCode(m_activity, handler,cell_Num,newSdk);
+
     }
 
 
@@ -472,7 +475,6 @@ public class FastLoginActivity extends Activity {
                     if(msg.obj!=null){
                         if(GameSDK.getInstance().getmLoginListener()!=null){
                             GameSDK.getInstance().getmLoginListener().onSuccess( msg.obj.toString() );
-
                             //登录成功之后就保存账号密码
                             DBHelper.getInstance().insertOrUpdateUser( m_userName , m_passWord );
 
@@ -498,8 +500,17 @@ public class FastLoginActivity extends Activity {
                             if(null==m_activity){
 
                             }else{
+                                try {
+                                    JSONObject jsons = new JSONObject(msg.obj.toString());
+                                    String reason= jsons.getString("reason");
+                                    Util.ShowTips(m_activity,reason);
+                                    m_activity.finish();
+                                    m_activity = null ;
 
-                                Util.ShowTips(m_activity,msg_content);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
 
 
                             }
@@ -682,39 +693,22 @@ public class FastLoginActivity extends Activity {
                 case ResultCode.QUERY_ACCOUNT_BIND_SUCCESS: //绑定了手机号
 
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
-                            String mobile= msg.obj.toString() ;
-
-                            TomastUser();
-
-                            if(null==m_activity){
-
-                            }else{
-
-
-                                m_activity.finish();
-                                m_activity = null ;
-
-                            }
-
+                        String mobile= msg.obj.toString() ;
+                        TomastUser();
+                        if(null==m_activity){
+                        }else{
+                            m_activity.finish();
+                            m_activity = null ;
                         }
                     }
-
-
                     break;
                 case ResultCode.QUERY_ACCOUNT_BIND_FAIL: //没有绑定手机号
 
                     if(msg.obj!=null) {
-                        if (GameSDK.getInstance().getmLoginListener() != null) {
-                            GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());
-
                             KnLog.log("没有绑定手机");
                             if (null == m_activity) {
 
                             } else {
-
 
                                 if(lastTime.equals(todayTime) && lastName.equals( m_userName )){ //如果两个时间段相等
 
@@ -837,14 +831,8 @@ public class FastLoginActivity extends Activity {
                                             }
                                         }
                                     });
-
-
                                 }
-
-
                             }
-                        }
-
                     }
 
                     break;

@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.game.sdk.GameSDK;
+import com.game.sdk.task.CommonAsyncTask;
 import com.game.sdk.task.SDK;
 import com.game.sdk.bean.GameInfo;
 import com.game.sdk.bean.GameUser;
@@ -13,7 +14,6 @@ import com.game.sdk.bean.PayInfo;
 import com.game.sdk.bean.UserInfo;
 import com.game.sdk.listener.BaseListener;
 import com.game.sdk.task.BindMobileAsyncTask;
-import com.game.sdk.task.CommonAsyncTask;
 import com.game.sdk.task.GetAccontMobileAsyncTask;
 import com.game.sdk.task.GetSecurityCodeAsyncTask;
 import com.game.sdk.task.GetUserNameAsyncTask;
@@ -37,12 +37,10 @@ import com.game.sdk.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +80,7 @@ public class HttpService {
 	public static void queryBindAccont( Context applicationContext, Handler handler, String user_Name ){
 		
 		try {
-			HashMap<String,String> update_params = getCommonParams();
+			HashMap<String,String> update_params = getCommonParams(applicationContext);
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			String versionCode = PROXY_VERSION;
 			JSONObject content = new JSONObject();
@@ -103,7 +101,7 @@ public class HttpService {
 	public static void getUsername( Context applicationContext, Handler handler, String user_Name ){
 
 		try {
-			HashMap<String , String> params = getCommonParams();
+			HashMap<String , String> params = getCommonParams(applicationContext);
 			JSONObject obj = new JSONObject();
 			obj.put("user_name", user_Name);
 			String content = obj.toString();
@@ -212,7 +210,7 @@ public class HttpService {
 	//获取验证码请求
 	public static void getSecCode( Context applicationContext, Handler handler, String mobile,String newSdk ){
 		try {
-			HashMap<String,String> update_params = getCommonParams();
+			HashMap<String,String> update_params = getCommonParams(applicationContext);
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			String versionCode = PROXY_VERSION ;
 			JSONObject content = new JSONObject();
@@ -232,7 +230,7 @@ public class HttpService {
 	public static void bindMobile( Context applicationContext, Handler handler, String mobile , String security_code , String user_Name ){
 		
 		try {
-			HashMap<String,String> update_params = getCommonParams();
+			HashMap<String,String> update_params = getCommonParams(applicationContext);
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			String versionCode = PROXY_VERSION ;
 			JSONObject content = new JSONObject();
@@ -320,7 +318,7 @@ public class HttpService {
 	//上报设备激活接口
 	public static void  recordActivate( Context applicationContext, Handler handler ){
 		try {
-		    HashMap<String , String> params = getCommonParams();
+		    HashMap<String , String> params = getCommonParams(applicationContext);
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			String versionCode = PROXY_VERSION ;
 			params.put("proxyVersion",versionCode);
@@ -377,7 +375,7 @@ public class HttpService {
 	public static void passwordNewSubmit( Context applicationContext, Handler handler, String mobile , String security_code , String new_password,String newSdk ){
 		
 		try {
-			HashMap<String , String> update_params = getCommonParams();
+			HashMap<String , String> update_params = getCommonParams(applicationContext);
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			String versionCode = PROXY_VERSION ;
@@ -403,7 +401,7 @@ public class HttpService {
 			String username, String password) {
 
 		try {
-			HashMap<String , String> params = getCommonParams();
+			HashMap<String , String> params = getCommonParams(applicationContext);
 			String app_secret = "3d759cba73b253080543f8311b6030bf";
 			JSONObject content = new JSONObject();
 			content.put("user_name", username);
@@ -419,6 +417,8 @@ public class HttpService {
 			Map<String, String> update_params = Util.getSign(params ,app_secret );
 			new LoginAsyncTask(applicationContext, handler, SDK.LOGIN_URL)
 					.execute(new Map[] { update_params, null, null });
+			/*new LoginAsyncTask(applicationContext, handler, SDK.LOGIN_URL)
+					.execute(new Map[] { update_params, null, null });*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -429,7 +429,7 @@ public class HttpService {
 			String username, String password) {
 		try {
 
-			HashMap<String,String> params = getCommonParams();
+			HashMap<String,String> params = getCommonParams(applicationContext);
 			JSONObject obj = new JSONObject();
 			obj.put("user_name", username);
 			obj.put("passwd", password);
@@ -451,7 +451,7 @@ public class HttpService {
 								  String mobile,String code, String password) {
 
 		try {
-			HashMap<String,String> params = getCommonParams();
+			HashMap<String,String> params = getCommonParams(applicationContext);
 			JSONObject obj = new JSONObject();
 			obj.put("mobile",mobile);
 			obj.put("passwd",password);
@@ -471,7 +471,7 @@ public class HttpService {
 
 
 	//注销接口 act_type: 2 注销 1：退出
-	public static void doCancel( String act_type,BaseListener listener) {
+	public static void doCancel(Activity activity,String act_type,BaseListener listener) {
 
 		try {
 			HashMap<String,String> params =  new HashMap<String,String>();
@@ -512,6 +512,10 @@ public class HttpService {
 			params.put("uid",uid);
 			params.put("server_id",server_id );
 			params.put("nick_name",nick_name );
+			params.put("system",Util.getSystemVersion()); //手机系统版本
+			params.put("memory",Util.getTotalMemorySize()); //手机内存大小
+			params.put("resolution",Util.ImageGalleryAdapter(activity.getApplicationContext())); //当前手机分辨率
+
 			Collection<String> keyset= params.keySet();
 			List<String> list = new ArrayList<String>(keyset);
 			Collections.sort(list);
@@ -574,7 +578,7 @@ public class HttpService {
 	public static void chanagePwd(Activity activity,
 			String username, String oldpassword , String newpassword , BaseListener listener) {
 		try {
-			HashMap<String,String> params = getCommonParams();
+			HashMap<String,String> params = getCommonParams(activity.getApplicationContext());
 			
 			JSONObject obj = new JSONObject();
 			obj.put("user_name", username);
@@ -602,7 +606,7 @@ public class HttpService {
 			UserInfo userInfo = GameSDK.getInstance().getUserInfo();
 			GameInfo gameInfo = GameSDK.getInstance().getGameInfo();
 
-			Map<String,String> params = getCommonParams();
+			Map<String,String> params = getCommonParams(activity.getApplicationContext());
 			
 			String uid = payInfo.getUid();
 			int server_id = payInfo.getServerId();
@@ -629,7 +633,7 @@ public class HttpService {
 	}
 	
 	
-	public static HashMap<String, String> getCommonParams(){
+	public static HashMap<String, String> getCommonParams(Context context){
 		
 		HashMap<String, String> params = new HashMap<String, String>();
 		
@@ -677,9 +681,9 @@ public class HttpService {
 		params.put("phone_type",Product+"_"+Mode); //手机型号
 		params.put("ip",ip); //手机型号
 		params.put("time",time); //当前时间
-
-		KnLog.log(" Login params :"+params.toString());
-		
+		params.put("system",Util.getSystemVersion()); //手机系统版本
+		params.put("memory",Util.getTotalMemorySize()); //手机内存大小
+		params.put("resolution",Util.ImageGalleryAdapter(context.getApplicationContext())); //当前手机分辨率
 		return params;
 		
 	}

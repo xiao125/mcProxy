@@ -24,9 +24,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
@@ -273,8 +276,20 @@ public class Util {
 		return 		update_params;
 	}
 	
-	public static boolean isMobileNO(String mobiles){  
+	/*public static boolean isMobileNO(String mobiles){
 		Pattern p = Pattern.compile("^(13[0-9]|14[57]|15[0-35-9]|17[6-8]|18[0-9])[0-9]{8}");
+		Matcher m = p.matcher(mobiles);
+		return m.matches();
+	}*/
+
+	/*public static boolean isMobileNO(String mobiles){
+		Pattern p = Pattern.compile("^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\\d{8}$");
+		Matcher m = p.matcher(mobiles);
+		return m.matches();
+	}*/
+
+	public static boolean isMobileNO(String mobiles){
+		Pattern p = Pattern.compile("^.{11}$");
 		Matcher m = p.matcher(mobiles);
 		return m.matches();
 	}
@@ -289,13 +304,13 @@ public class Util {
     电信：133、153、170、173、177、180、181、189、（1349卫通）
     总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
     */
-		String num = "[1][34578]\\d{9}";//"[1]"代表第1位为数字1，"[34578]"代表第二位可以为3、4、5、7、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
+		String telRegex = "^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\\d{8}$";// "[1]"代表下一位为数字可以是几，"[0-9]"代表可以为0-9中的一个，"[5,7,9]"表示可以是5,7,9中的任意一位,[^4]表示除4以外的任何一个,\\d{9}"代表后面是可以是0～9的数字，有9位。
 		if (TextUtils.isEmpty(number)) {
 			return false;
 		} else {
 			//matches():字符串是否在给定的正则表达式匹配
 			KnLog.log("==========手机格式============");
-			return number.matches(num);
+			return number.matches(telRegex);
 		}
 	}
 
@@ -744,5 +759,52 @@ public class Util {
 		int screenHeight = dm.heightPixels;
 		return  screenWidth+"/"+ screenHeight;
 	}
+
+	/*
+   * 获取手机内存总大小
+   * @return
+   */
+	public static String getTotalMemorySize() {
+		try {
+
+			FileReader fr = new FileReader("/proc/meminfo");
+			BufferedReader br = new BufferedReader(fr, 2048);
+//         String memoryLine = br.readLine();
+			String subMemoryLine = "";
+			String Line = "";
+			while ((Line = br.readLine()) != null)
+			{
+				if (Line.contains("MemTotal:")){
+					subMemoryLine = Line.substring(Line.indexOf("MemTotal:"));
+					break;
+				}
+
+			}
+			br.close();
+			Matcher mer = Pattern.compile("^[0-9]+$").matcher(subMemoryLine.replaceAll("\\D+", ""));
+			//如果为正整数就说明数据正确的，确保在Double.parseDouble中不会异常
+			if (mer.find()) {
+				long memSize = Integer.parseInt(subMemoryLine.replaceAll("\\D+", "")) ;
+				double mem = (Double.parseDouble(memSize + "")/1024)/1024;
+				NumberFormat nf = new DecimalFormat( "0.0 ");
+				mem = Double.parseDouble(nf.format(mem));
+				//Log.e(LOG_TAG,"=========mem================ " + mem);
+				return String.valueOf(mem+"G");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "Unavailable";
+	}
+
+	/**
+	 * 获取当前手机系统版本号
+	 *
+	 * @return  系统版本号
+	 */
+	public static String getSystemVersion() {
+		return android.os.Build.VERSION.RELEASE;
+	}
+
 
 }

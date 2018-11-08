@@ -194,35 +194,23 @@ public class GameSDK {
 			isAuot=true;
 		}else {
 			Object isLogout = TodayTimeUtils.getLogout(activity);
-			String result = Util.getAssetsFileContent(activity, "SDKFile/adChannel.png");
-			String game = Util.getJsonStringByName(result, "game");
-			if (game.equals("p3")) {
-				KnLog.log("=========p3渠道配置,注销状态=======" + isLogout.toString());
-				if (isLogout.equals("true")) {
-					KnLog.log("=========显示选择账号-=======");
-					intent = new Intent(activity, AutoLoginActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					intent.putExtra("logout", "logout");
+			if (isLogout.equals("true")) {
+				intent = new Intent(activity, AutoLoginActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra("logout", "logout");
+				activity.startActivity(intent);
+				TodayTimeUtils.setLogout(activity, "false");
+			} else {
+				KnLog.log("=========自动登录1-======="+isAuot);
+				if (!isAuot) {
+					intent = new Intent(activity, AutomaticLoginActivity.class);
 					activity.startActivity(intent);
-					TodayTimeUtils.setLogout(activity, "false");
-					KnLog.log("sdk注销账号了2");
-				} else {
-					KnLog.log("=========自动登录1-=======" + isAuot);
-					if (!isAuot) {
-						intent = new Intent(activity, AutomaticLoginActivity.class);
-						activity.startActivity(intent);
-						isAuot = false;
-					} else {
-						intent = new Intent(activity, AutomaticLoginActivity.class);
-						activity.startActivity(intent);
-						KnLog.log("=========11111========");
-						isAuot = false;
-					}
+					isAuot = false;
 				}
 			}
 		}
 
-		KnLog.log("=========自动登录2-======="+isAuot);
+		KnLog.log("=========自动登录完后2-======="+isAuot);
        //开启悬浮窗
 		mSusViewMager = SusViewMager.getInstance();
 		if (mSusViewMager !=null){
@@ -233,14 +221,10 @@ public class GameSDK {
 
 	//游戏内切换账号接口
 	public  void McLogout(Activity activity){
-		Intent intent1 = new Intent(activity, AutoLoginActivity.class);
-		// intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent1.putExtra("logout","logout");
-		activity.startActivity(intent1);
 
+		TodayTimeUtils.setLogout(activity,"true");
 		//注销
-		HttpService.doCancel("2",new BaseListener() {
+		HttpService.doCancel(activity,"2",new BaseListener() {
 			@Override
 			public void onSuccess(Object result) {
 			}
@@ -256,7 +240,7 @@ public class GameSDK {
 	public void  McQuit(){
 		//注销
 		KnLog.log("sdk退出");
-		HttpService.doCancel("1",new BaseListener() {
+		HttpService.doCancel(activity,"1",new BaseListener() {
 			@Override
 			public void onSuccess(Object result) {
 				KnLog.log("退出返回数据"+result);
@@ -275,22 +259,16 @@ public class GameSDK {
 			mSusViewMager.setOnLogoutListener(logoutListener);
 		}
 		logoutListener.onExitFinish();
-		RecordActivate.getInstance().init(activity);
-
-
-		//延迟1.5S游戏跳转到登录界面后弹出登录框
-		new Handler().postDelayed(new Runnable() {
+		//注销
+		HttpService.doCancel(activity,"2",new BaseListener() {
 			@Override
-			public void run() {
-				//防止第一没有账号就点击注销
-				Intent intent1 = new Intent(activity, AutoLoginActivity.class);
-				// intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				intent1.putExtra("logout","logout");
-				activity.startActivity(intent1);
-				KnLog.log("sdk注销账号了2");
+			public void onSuccess(Object result) {
 			}
-		},1000);
+			@Override
+			public void onFail(Object result) {
+
+			}
+		});
 	}
 
 	//悬浮窗注销功能

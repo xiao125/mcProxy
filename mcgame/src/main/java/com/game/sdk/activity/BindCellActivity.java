@@ -169,7 +169,6 @@ public class BindCellActivity  extends Activity implements OnClickListener {
 			LoadingDialog.dismiss();
 			switch (resultCode) {
 			case ResultCode.BIND_SUCCESS: //绑定手机号成功
-
 				if(msg.obj!=null) {
 					if (GameSDK.getInstance().getmLoginListener() != null) {
 						GameSDK.getInstance().getmLoginListener().onSuccess(msg.obj.toString());

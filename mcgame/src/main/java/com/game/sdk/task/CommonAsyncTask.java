@@ -57,7 +57,6 @@ public class CommonAsyncTask extends AsyncTask<Map<String, String>, Void, Void> 
 					case ResultCode.SUCCESS:
 						excuteCallback(ResultCode.SUCCESS, result);
 						break;
-	
 					default:
 						excuteCallback(ResultCode.FAIL , result);
 						break;
